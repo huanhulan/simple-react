@@ -1,0 +1,9 @@
+{
+  "name": "my-react",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "rambda": "^6.9.0"
+  }
+}
