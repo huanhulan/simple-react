@@ -31,7 +31,7 @@ export default function () {
       }),
     ],
     resolve: {
-      extensions: ['.ts', '.tsx', '.js'], // !important
+      extensions: ['.ts', '.tsx', '.js', '.jsx'], // !important
       plugins: [new TSConfigPathsPlugin()],
     },
     module: {
