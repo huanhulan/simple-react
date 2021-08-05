@@ -4,8 +4,6 @@
     "source.fixAll.eslint": true
   },
   "eslint.alwaysShowStatus": true,
-  "cSpell.words": [
-    "rambda"
-  ],
+  "cSpell.words": ["rambda"],
   "typescript.tsdk": "node_modules/typescript/lib"
 }

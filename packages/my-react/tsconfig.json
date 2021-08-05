@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "composite": true,
+    "composite": true, // !important: allow a TypeScript project to be used with project references
     "outDir": "dist",
     "rootDir": ".",
     "target": "ES2019",

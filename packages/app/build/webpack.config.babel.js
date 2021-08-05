@@ -1,22 +1,24 @@
 import { resolve, join } from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import TSConfigPathsPlugin  from 'tsconfig-paths-webpack-plugin';
-import NodeExternals  from 'webpack-node-externals';
+// load modules whose location is specified in the paths section of tsconfig.json when using webpack
+import TSConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+// Easily exclude node modules in Webpack
+import NodeExternals from 'webpack-node-externals';
 
-export default function (env, argv) {
+export default function () {
   return {
     externals: [
       NodeExternals({
         allowlist: [/^my-react/],
-        additionalModuleDirs: ['../../node_modules'],
+        additionalModuleDirs: [join(__dirname, '../../node_modules')],
       }),
     ],
-    mode: env.production ? 'production' : 'development',
+    mode: 'development',
     entry: './src/index.ts',
-    devtool: env.production ? 'source-map' : 'eval',
+    devtool: 'eval',
     devServer: {
       open: true,
-      historyApiFallback: true
+      historyApiFallback: true,
     },
     output: {
       path: resolve(__dirname, 'dist'),
@@ -29,7 +31,7 @@ export default function (env, argv) {
       }),
     ],
     resolve: {
-      extensions: ['.ts', '.tsx', '.js'],
+      extensions: ['.ts', '.tsx', '.js'], // !important
       plugins: [new TSConfigPathsPlugin()],
     },
     module: {
@@ -41,5 +43,5 @@ export default function (env, argv) {
         },
       ],
     },
-  }
+  };
 }
