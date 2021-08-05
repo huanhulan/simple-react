@@ -1,0 +1,22 @@
+{
+  "name": "my-react",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "rambda": "^6.9.0"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf ./dist && rm tsconfig.tsbuildinfo",
+    "watch": "tsc -b -w --preserveWatchOutput"
+  },
+  "private": true,
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  }
+}

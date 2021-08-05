@@ -3,5 +3,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "eslint.alwaysShowStatus": true
+  "eslint.alwaysShowStatus": true,
+  "cSpell.words": [
+    "rambda"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

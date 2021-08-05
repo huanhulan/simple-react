@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "target": "ES2019",
+    "noEmit": true,
+    "moduleResolution": "Node",
+    "lib": ["dom", "ES2019"],
+    "paths": {
+      "my-react": ["../my-react"]
+    }
+  },
+  // "references": [{ "path": "../my-react" }],
+  "exclude": ["node_modules", "dist", "babel.config.js", "build/**/*"]
+}
