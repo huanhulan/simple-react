@@ -5,7 +5,7 @@ import TSConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 // Easily exclude node modules in Webpack
 import NodeExternals from 'webpack-node-externals';
 
-export default function () {
+export default function webpackConfig() {
   return {
     externals: [
       NodeExternals({

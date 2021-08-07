@@ -3,7 +3,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
   "eslint.alwaysShowStatus": true,
   "cSpell.words": ["rambda"],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.packageManager": "yarn"
 }

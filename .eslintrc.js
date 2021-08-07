@@ -5,21 +5,61 @@ module.exports = {
     node: true,
   },
   extends: [
-    'eslint:recommended',
+    "airbnb",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
     // 'plugin:react/recommended',
-    'plugin:@typescript-eslint/recommended',
   ],
-  parser: '@typescript-eslint/parser',
+  parser: "@typescript-eslint/parser",
   parserOptions: {
+    ecmaVersion: 7,
+    ecmaFeatures: {
+      legacyDecorators: true,
+    },
     ecmaFeatures: {
       jsx: true,
     },
     ecmaVersion: 12,
-    sourceType: 'module',
+    sourceType: "module",
   },
-  plugins: ['react', '@typescript-eslint'],
+  plugins: [
+    "react",
+    "@typescript-eslint",
+    //  "react-hooks"
+  ],
+  "settings": {
+    "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
   rules: {
-    quotes: ['error', 'single'],
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    quotes: ["error", "single"],
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/prefer-default-export": 0,
+    "prettier/prettier": [
+      "error",
+      {
+        singleQuote: true,
+      },
+    ],
+    "import/extensions": [
+      2,
+      "ignorePackages",
+      {
+        js: "never",
+        jsx: "never",
+        ts: "never",
+        tsx: "never",
+      },
+    ],
   },
 };

@@ -5,7 +5,7 @@
     "outDir": "dist",
     "rootDir": ".",
     "target": "ES2019",
-    "lib": [ "dom", "ES2019"]
+    "lib": [ "dom", "ES2019"],
   },
   "exclude": [
     "node_modules",
