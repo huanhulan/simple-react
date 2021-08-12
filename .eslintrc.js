@@ -45,6 +45,7 @@ module.exports = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "import/prefer-default-export": 0,
+    "no-param-reassign": 0,
     "prettier/prettier": [
       "error",
       {
