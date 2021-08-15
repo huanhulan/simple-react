@@ -34,10 +34,11 @@ declare type RefCallback<T> = (instance: T | null) => void;
 declare type Ref<T> = RefObject<T> | RefCallback<T>;
 
 declare type Fiber = {
-  type: MyReactElement["type"];
+  type?: MyReactElement["type"];
   dom?: HTMLElement;
   props: MyReactElement["props"];
   alternate?: Fiber;
   child?: Fiber;
   parent?: Fiber;
+  sibling?: Fiber;
 };

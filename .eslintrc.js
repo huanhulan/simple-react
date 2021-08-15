@@ -30,7 +30,7 @@ module.exports = {
     //  "react-hooks"
   ],
   "settings": {
-    "import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+    "import/extensions": [".js", ".jsx", ".ts", ".tsx", ".d.ts"],
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"]
     },
