@@ -11,6 +11,7 @@ function performWorkSync(deadline: IdleDeadline) {
 
 export function workLoop(deadline: IdleDeadline) {
   performWorkSync(deadline);
+  // once we finish all the work we commit the whole fiber tree to the DOM.
   if (!mutables.nextUnitOfWork && mutables.wipRoot) {
     commitRoot();
   }
