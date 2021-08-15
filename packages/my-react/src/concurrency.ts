@@ -1,13 +1,16 @@
 import { mutables } from './mutables';
-import { performUnitOfWork, commitRoot } from './Reconciliation';
+import { performUnitOfWork, commitRoot } from './reconciliation';
+
+function performWorkSync(deadline: IdleDeadline) {
+  if (!mutables.nextUnitOfWork || deadline.timeRemaining() < 1) {
+    return;
+  }
+  mutables.nextUnitOfWork = performUnitOfWork(mutables.nextUnitOfWork);
+  performWorkSync(deadline);
+}
 
 export function workLoop(deadline: IdleDeadline) {
-  let shouldYield = false;
-  while (mutables.nextUnitOfWork && !shouldYield) {
-    mutables.nextUnitOfWork = performUnitOfWork(mutables.nextUnitOfWork);
-    shouldYield = deadline.timeRemaining() < 1;
-  }
-
+  performWorkSync(deadline);
   if (!mutables.nextUnitOfWork && mutables.wipRoot) {
     commitRoot();
   }

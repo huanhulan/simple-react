@@ -1,4 +1,6 @@
 import { omit, forEach, keys, isNil } from 'ramda';
+
+import { workLoop } from './concurrency';
 import { TEXT_ELEMENT, ROOT_KEY } from './constants';
 
 function mount(reactElm: MyReactElement, node: HTMLElement) {
@@ -37,6 +39,7 @@ function mount(reactElm: MyReactElement, node: HTMLElement) {
   }
 
   node.appendChild(instantiateElm(reactElm));
+  requestIdleCallback(workLoop);
 }
 
 export function render(reactElm: MyReactElement, node: HTMLElement) {
