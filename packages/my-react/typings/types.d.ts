@@ -37,6 +37,11 @@ declare type Ref<T> = RefObject<T> | RefCallback<T>;
 
 type Effects = 'PLACEMENT' | 'UPDATE' | 'DELETION';
 
+declare interface StateHook<P> {
+  state: P;
+  queue: Array<((param: P) => P) | P>;
+}
+
 declare type Fiber<P = MyReactElement['props']> = {
   type?: MyReactElement['type'];
   dom?: Node;
@@ -47,5 +52,6 @@ declare type Fiber<P = MyReactElement['props']> = {
   parent?: Fiber;
   sibling?: Fiber;
   effectTag?: Effects;
-  hooks?: [];
+  // to the fiber to support calling useState several times in the same component
+  hooks?: StateHook[];
 };

@@ -25,6 +25,10 @@ export function createDom(fiber: Fiber): Node {
   return dom;
 }
 
+/**
+ * We are also walking the whole tree in the commit phase.
+ * React keeps a linked list with just the fibers that have effects and only visit those fibers.
+ */
 export function commitWork(fiber?: Fiber) {
   if (!fiber) {
     return;
@@ -52,6 +56,7 @@ export function commitWork(fiber?: Fiber) {
     default:
     case EFFECT_TAG.DELETION: {
       commitDeletion(fiber, domParent as HTMLElement);
+      return;
     }
   }
 

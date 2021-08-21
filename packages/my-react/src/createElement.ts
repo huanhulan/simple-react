@@ -1,4 +1,3 @@
-import { map } from 'ramda';
 import { TEXT_ELEMENT } from './constants';
 
 export function createTextElement(text: TextChild): MyReactElement {
@@ -20,9 +19,9 @@ export function createElement(
     type,
     props: {
       ...props,
-      children: map((child) => {
+      children: children.flat().map((child) => {
         return typeof child === 'object' ? child : createTextElement(child);
-      }, children),
+      }),
     },
   };
 }

@@ -16,6 +16,10 @@ function mount(reactElm: MyReactElement, node: HTMLElement) {
   mutables.nextUnitOfWork = mutables.wipRoot;
 }
 
+/**
+ * we are walking the whole tree during the render phase.
+ * React instead follows some hints and heuristics to skip entire sub-trees where nothing changed.
+ */
 export function render(reactElm: MyReactElement, node: HTMLElement) {
   mount(reactElm, node);
   requestIdleCallback(workLoop);
