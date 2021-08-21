@@ -17,10 +17,9 @@ export function useState<P>(
   };
   const actions = oldHook ? oldHook.queue : [];
   actions.forEach((action) => {
-    if (is(Function, action)) {
-      return (action as (p: P) => P)(hook.state);
-    }
-    return action as P;
+    hook.state = is(Function, action)
+      ? (action as (p: P) => P)(hook.state)
+      : (action as P);
   });
   const setState = (action: ((p: P) => P) | P) => {
     hook.queue.push(action);
