@@ -1,66 +1,8 @@
 import { isNil } from 'ramda';
+import { isFunctionComponent } from './isFunctionComponent';
+import { createDom } from './commit';
+import { EFFECT_TAG } from './constants';
 import { mutables } from './mutables';
-
-function findParentWithDom(childFiber: Fiber): Fiber {
-  if (!childFiber?.dom) {
-    return findParentWithDom(childFiber.parent as Fiber);
-  }
-  return childFiber.parent as Fiber;
-}
-
-function commitDeletion(fiber: Fiber, container: HTMLElement) {
-  if (fiber.dom) {
-    container.removeChild(fiber.dom);
-    return;
-  }
-  if (!fiber.child) {
-    return;
-  }
-  commitDeletion(fiber.child, container);
-}
-
-function updateDom(
-  fiberDom: HTMLElement,
-  prevProps?: Fiber['props'],
-  nextProps?: Fiber['props']
-) {
-  // TODO
-}
-
-export function commitWork(fiber?: Fiber) {
-  if (!fiber) {
-    return;
-  }
-
-  const { dom: domParent } = findParentWithDom(fiber);
-
-  if (!fiber.dom) {
-    commitDeletion(fiber, domParent as HTMLElement);
-  }
-
-  switch (fiber.effectTag) {
-    case 'PLACEMENT': {
-      domParent?.appendChild(fiber.dom as HTMLElement);
-      break;
-    }
-    case 'UPDATE': {
-      updateDom(fiber.dom as HTMLElement, fiber.alternate?.props, fiber.props);
-      break;
-    }
-    default:
-    case 'DELETION': {
-      commitDeletion(fiber, domParent as HTMLElement);
-    }
-  }
-
-  commitWork(fiber.child);
-  commitWork(fiber.sibling);
-}
-
-export function createDom(fiber: Fiber): HTMLElement {
-  // TODO
-  return document.createElement('div');
-}
 
 function walkFiberTree(fiber?: Fiber): Fiber | undefined {
   if (!fiber) {
@@ -72,46 +14,103 @@ function walkFiberTree(fiber?: Fiber): Fiber | undefined {
   return walkFiberTree(fiber.parent);
 }
 
-export function performUnitOfWork(fiber: Fiber) {
-  if (isNil(fiber.dom)) {
-    fiber.dom = createDom(fiber);
-  }
-  if (!isNil(fiber.parent)) {
-    fiber.parent?.dom?.appendChild(fiber.dom);
-  }
-  const { children } = fiber.props;
-  const childFibers = children.map(
-    (element) =>
-      ({
+function reconcileChildren(
+  wipFiber: Fiber,
+  elements: Fiber['props']['children']
+) {
+  let index = 0;
+  let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
+  let prevSibling: Fiber = {} as any;
+
+  while (
+    index < elements.length ||
+    oldFiber != null // if the linked list of old fiber is longer than the current element list
+  ) {
+    const element = elements[index];
+    let newFiber: Fiber = {} as any;
+
+    const sameType =
+      !isNil(oldFiber) && !isNil(element) && element.type === oldFiber.type;
+
+    /**
+     * if the old fiber and the new element have the same type,
+     * we can keep the DOM node and just update it with the new props
+     */
+    if (sameType) {
+      newFiber = {
         type: element.type,
         props: element.props,
-        parent: fiber,
-      } as Fiber)
-  );
-
-  childFibers.forEach((childFiber, idx) => {
-    const next = childFibers[idx + 1];
-    if (next) {
-      childFiber.sibling = next;
+        dom: oldFiber?.dom,
+        parent: wipFiber,
+        alternate: oldFiber,
+        effectTag: EFFECT_TAG.UPDATE,
+      };
     }
-  });
 
-  // eslint-disable-next-line
-  fiber.child = childFibers[0];
+    /**
+     * if the type is different and there is a new element, it means we need to create a new DOM node
+     */
+    if (!isNil(element) && !sameType) {
+      newFiber = {
+        type: element.type,
+        props: element.props,
+        dom: undefined,
+        parent: wipFiber,
+        alternate: undefined,
+        effectTag: EFFECT_TAG.PLACEMENT,
+      };
+    }
+
+    /**
+     *  if the types are different and there is an old fiber, we need to remove the old node
+     */
+    if (!isNil(oldFiber) && !sameType) {
+      oldFiber.effectTag = EFFECT_TAG.DELETION;
+      mutables.deletions.push(oldFiber);
+    }
+
+    // forward a step
+    if (oldFiber) {
+      oldFiber = oldFiber.sibling;
+    }
+
+    if (index === 0) {
+      wipFiber.child = newFiber;
+    } else if (element) {
+      prevSibling.sibling = newFiber;
+    }
+    prevSibling = newFiber;
+
+    index += 1;
+  }
+}
+
+function updateFunctionComponent(fiber: Fiber) {
+  mutables.wipFiber = fiber;
+  mutables.hookIndex = 0;
+  fiber.hooks = [];
+  const children = [(fiber.type as FunctionComponent)(fiber.props)];
+  reconcileChildren(fiber, children);
+}
+
+function updateHostComponent(fiber: Fiber) {
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+  reconcileChildren(fiber, fiber.props.children);
+}
+
+export function performUnitOfWork(fiber: Fiber) {
+  const isFC = isFunctionComponent(fiber);
+  if (isFC) {
+    updateFunctionComponent(fiber);
+  } else {
+    updateHostComponent(fiber);
+  }
 
   if (fiber.child) {
     return fiber.child;
   }
 
   return walkFiberTree(fiber);
-}
-
-export function commitRoot() {
-  const { deletions, wipRoot } = mutables;
-  deletions.forEach(commitWork);
-  if (wipRoot?.child) {
-    commitWork(wipRoot.child);
-  }
-  mutables.currentRoot = wipRoot;
-  mutables.wipRoot = undefined;
 }

@@ -39,11 +39,13 @@ type Effects = 'PLACEMENT' | 'UPDATE' | 'DELETION';
 
 declare type Fiber = {
   type?: MyReactElement['type'];
-  dom?: HTMLElement;
+  dom?: Node;
   props: MyReactElement['props'];
+  // a link to the old fiber
   alternate?: Fiber;
   child?: Fiber;
   parent?: Fiber;
   sibling?: Fiber;
   effectTag?: Effects;
+  hooks?: [];
 };

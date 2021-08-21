@@ -42,6 +42,8 @@ module.exports = {
   },
   rules: {
     quotes: ["error", "single"],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "import/prefer-default-export": 0,

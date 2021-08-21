@@ -1,5 +1,6 @@
 import { mutables } from './mutables';
-import { performUnitOfWork, commitRoot } from './reconciliation';
+import { performUnitOfWork } from './reconciliation';
+import { commitRoot } from './commit';
 
 function performWorkSync(deadline: IdleDeadline) {
   if (!mutables.nextUnitOfWork || deadline.timeRemaining() < 1) {
