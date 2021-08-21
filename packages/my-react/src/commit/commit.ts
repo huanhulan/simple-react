@@ -19,6 +19,13 @@ export function createDom(fiber: Fiber): Node {
   return dom;
 }
 
+function findFiberWithDom(fiber?: Fiber): Fiber {
+  if (!fiber?.dom) {
+    return findFiberWithDom(fiber?.parent);
+  }
+  return fiber;
+}
+
 /**
  * We are also walking the whole tree in the commit phase.
  * React keeps a linked list with just the fibers that have effects and only visit those fibers.
@@ -28,11 +35,12 @@ export function commitWork(fiber?: Fiber) {
     return;
   }
 
-  let domParentFiber = fiber.parent;
-  while (!domParentFiber?.dom) {
-    domParentFiber = domParentFiber?.parent;
+  const { dom: domParent } = findFiberWithDom(fiber.parent);
+
+  if (!domParent) {
+    // eslint-disable-next-line
+    throw new Error("Can't find a container element");
   }
-  const domParent = domParentFiber.dom;
 
   if (fiber.effectTag === EFFECT_TAG.PLACEMENT && !isNil(fiber.dom)) {
     domParent.appendChild(fiber.dom);
