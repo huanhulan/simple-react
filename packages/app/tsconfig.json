@@ -9,7 +9,7 @@
     "lib": ["dom", "ES2019"],
     "paths": {
       "my-react": ["../my-react"] // !important
-    }
+    },
   },
   "exclude": ["node_modules", "dist", "babel.config.js", "build/**/*"]
 }

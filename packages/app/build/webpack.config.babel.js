@@ -1,28 +1,26 @@
-import { resolve, join } from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-// load modules whose location is specified in the paths section of tsconfig.json when using webpack
-import TSConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-// Easily exclude node modules in Webpack
-import NodeExternals from 'webpack-node-externals';
 
-export default function webpackConfig() {
+import path from 'path';
+
+/**
+ * @returns {webpack.Configuration}
+ */
+module.exports = function webpackConfig() {
   return {
-    externals: [
-      NodeExternals({
-        allowlist: [/^my-react/],
-        additionalModuleDirs: [join(__dirname, '../../node_modules')],
-      }),
-    ],
     mode: 'development',
-    entry: './src/index.ts',
-    devtool: 'eval',
+    entry: {
+      index: './src/index.tsx',
+    },
+    devtool: 'inline-source-map',
     devServer: {
-      open: true,
+      open: false,
       historyApiFallback: true,
     },
+
     output: {
-      path: resolve(__dirname, 'dist'),
-      filename: 'bundle.js',
+      filename: '[name].[contenthash:8].js',
+      path: path.join(__dirname, '../dist'),
+      publicPath: '/',
     },
     plugins: [
       new HtmlWebpackPlugin({
@@ -32,16 +30,22 @@ export default function webpackConfig() {
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.jsx', '...'], // !important
-      plugins: [new TSConfigPathsPlugin()],
     },
     module: {
       rules: [
         {
-          test: /\\.j|ts(x)?$/,
-          exclude: /node_modules/,
+          test: /\.j|ts(x)?$/,
           use: ['babel-loader'],
+          exclude: [/core-js/],
         },
       ],
     },
+    optimization: {
+      splitChunks: {
+        chunks: 'initial',
+        minSize: 30000,
+        maxAsyncRequests: 3,
+      },
+    },
   };
-}
+};
