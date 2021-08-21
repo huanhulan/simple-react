@@ -17,7 +17,7 @@ declare type ComponentChildren = ComponentChild[];
 
 declare interface FunctionComponent<P = Record<string, unknown>> {
   // eslint-disable-next-line
-  (props: RenderableProps<P>, context?: any): VNode<any> | null;
+  (props: RenderableProps<P>, context?: any): MyReactElement<any> | null;
   displayName?: string;
   defaultProps?: Partial<P>;
 }
@@ -37,10 +37,10 @@ declare type Ref<T> = RefObject<T> | RefCallback<T>;
 
 type Effects = 'PLACEMENT' | 'UPDATE' | 'DELETION';
 
-declare type Fiber = {
+declare type Fiber<P = MyReactElement['props']> = {
   type?: MyReactElement['type'];
   dom?: Node;
-  props: MyReactElement['props'];
+  props: P;
   // a link to the old fiber
   alternate?: Fiber;
   child?: Fiber;

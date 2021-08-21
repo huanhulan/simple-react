@@ -27,7 +27,11 @@ function reconcileChildren(
     oldFiber != null // if the linked list of old fiber is longer than the current element list
   ) {
     const element = elements[index];
-    let newFiber: Fiber = {} as any;
+    let newFiber = {
+      type: element.type,
+      props: element.props,
+      parent: wipFiber,
+    } as Fiber;
 
     const sameType =
       !isNil(oldFiber) && !isNil(element) && element.type === oldFiber.type;
@@ -38,10 +42,8 @@ function reconcileChildren(
      */
     if (sameType) {
       newFiber = {
-        type: element.type,
-        props: element.props,
+        ...newFiber,
         dom: oldFiber?.dom,
-        parent: wipFiber,
         alternate: oldFiber,
         effectTag: EFFECT_TAG.UPDATE,
       };
@@ -52,10 +54,8 @@ function reconcileChildren(
      */
     if (!isNil(element) && !sameType) {
       newFiber = {
-        type: element.type,
-        props: element.props,
+        ...newFiber,
         dom: undefined,
-        parent: wipFiber,
         alternate: undefined,
         effectTag: EFFECT_TAG.PLACEMENT,
       };
@@ -89,11 +89,16 @@ function updateFunctionComponent(fiber: Fiber) {
   mutables.wipFiber = fiber;
   mutables.hookIndex = 0;
   fiber.hooks = [];
-  const children = [(fiber.type as FunctionComponent)(fiber.props)];
+  const res = (fiber.type as FunctionComponent)(fiber.props);
+  if (!res) {
+    return;
+  }
+  const children = Array.isArray(res) ? res : [res];
   reconcileChildren(fiber, children);
 }
 
 function updateHostComponent(fiber: Fiber) {
+  // the fiber from a function component doesn't have a DOM node
   if (!fiber.dom) {
     fiber.dom = createDom(fiber);
   }
@@ -108,9 +113,10 @@ export function performUnitOfWork(fiber: Fiber) {
     updateHostComponent(fiber);
   }
 
+  // go deeper
   if (fiber.child) {
     return fiber.child;
   }
-
+  // goto next sibling or parent
   return walkFiberTree(fiber);
 }
