@@ -43,9 +43,12 @@ module.exports = {
   rules: {
     quotes: ["error", "single"],
     "no-shadow": "off",
+    "react/jsx-filename-extension": "off",
+    "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-shadow": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
     "import/prefer-default-export": 0,
     "no-param-reassign": 0,
     "prettier/prettier": [
