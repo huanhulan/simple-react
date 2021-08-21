@@ -3,15 +3,13 @@ import { createElement, useState, render } from 'my-react';
 
 function Counter() {
   const [state, setState] = useState<number>(1);
-  const onClick = () => setState((c: number) => c + 1);
   return (
     /* @ts-ignore */
-    <button type="button" onClick={onClick}>
+    <h1 onClick={() => setState((c: number) => c + 1)}>
       Count: {state}
       {/* @ts-ignore */}
-    </button>
+    </h1>
   );
 }
-const element = <Counter />;
 
-render(element, document.getElementById('container') as HTMLDivElement);
+render(<Counter />, document.getElementById('container') as HTMLDivElement);

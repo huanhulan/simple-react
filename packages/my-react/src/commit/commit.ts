@@ -1,14 +1,8 @@
+import { isNil } from 'ramda';
 import { mutables } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
 import { commitDeletion } from './commitDeletion';
-
-function findParentWithDom(childFiber: Fiber): Fiber {
-  if (!childFiber?.dom) {
-    return findParentWithDom(childFiber.parent as Fiber);
-  }
-  return childFiber.parent as Fiber;
-}
 
 export function createDom(fiber: Fiber): Node {
   const dom =
@@ -34,30 +28,19 @@ export function commitWork(fiber?: Fiber) {
     return;
   }
 
-  const { dom: domParent } = findParentWithDom(fiber);
-
-  if (!fiber.dom) {
-    commitDeletion(fiber, domParent as HTMLElement);
+  let domParentFiber = fiber.parent;
+  while (!domParentFiber?.dom) {
+    domParentFiber = domParentFiber?.parent;
   }
+  const domParent = domParentFiber.dom;
 
-  switch (fiber.effectTag) {
-    case EFFECT_TAG.PLACEMENT: {
-      domParent?.appendChild(fiber.dom as HTMLElement);
-      break;
-    }
-    case EFFECT_TAG.UPDATE: {
-      updateDom(
-        fiber.dom as HTMLElement,
-        (fiber.alternate as Fiber).props,
-        fiber.props
-      );
-      break;
-    }
-    default:
-    case EFFECT_TAG.DELETION: {
-      commitDeletion(fiber, domParent as HTMLElement);
-      return;
-    }
+  if (fiber.effectTag === EFFECT_TAG.PLACEMENT && !isNil(fiber.dom)) {
+    domParent.appendChild(fiber.dom);
+  } else if (fiber.effectTag === EFFECT_TAG.UPDATE && !isNil(fiber.dom)) {
+    updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
+  } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
+    commitDeletion(fiber, domParent);
+    return;
   }
 
   commitWork(fiber.child);

@@ -1,5 +1,8 @@
-export function commitDeletion(fiber: Fiber, container: HTMLElement) {
-  if (fiber.dom) {
+export function commitDeletion(fiber: Fiber, container: Node) {
+  if (
+    fiber.dom &&
+    Array.from(container.childNodes).includes(fiber.dom as any)
+  ) {
     container.removeChild(fiber.dom);
     return;
   }

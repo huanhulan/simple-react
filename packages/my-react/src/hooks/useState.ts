@@ -6,7 +6,9 @@ import { mutables } from '../mutables';
  * it throws away the work in progress tree and starts again from the root.
  * React tags each update with an expiration timestamp and uses it to decide which update has a higher priority.
  */
-export function useState<P>(initialState: P) {
+export function useState<P>(
+  initialState: P
+): [P, (action: P | ((p: P) => P)) => void] {
   const oldHooks = mutables.wipFiber?.alternate?.hooks;
   const oldHook: StateHook<P> = oldHooks && oldHooks[mutables.hookIndex || 0];
   const hook: StateHook<P> = {
