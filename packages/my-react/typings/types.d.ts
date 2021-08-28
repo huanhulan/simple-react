@@ -12,7 +12,7 @@ declare type Key = string | number | any;
 
 declare type TextChild = string | number | boolean | undefined;
 
-declare type ComponentChild = MyReactElement<any> | null | boolean | undefined;
+declare type ComponentChild = MyReactElement<any> | null | false | undefined;
 declare type ComponentChildren = ComponentChild[];
 
 declare interface FunctionComponent<P = Record<string, unknown>> {

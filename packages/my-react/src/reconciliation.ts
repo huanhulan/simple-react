@@ -42,7 +42,10 @@ function reconcileChildren(
     ) as Fiber;
 
     const sameType =
-      !isNil(oldFiber) && !isNil(element) && element.type === oldFiber.type;
+      !isNil(oldFiber) &&
+      !isNil(element) &&
+      element &&
+      element.type === oldFiber.type;
 
     /**
      * if the old fiber and the new element have the same type,

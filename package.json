@@ -25,7 +25,8 @@
   },
   "scripts": {
     "commit": "cz",
-    "start": "yarn workspace  app start"
+    "start": "yarn workspace app start",
+    "build": "yarn workspace my-react build"
   },
   "config": {
     "commitizen": {

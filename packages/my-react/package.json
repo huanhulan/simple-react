@@ -16,6 +16,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-typescript": "^8.2.5",
     "@types/ramda": "^0.27.44",
     "@types/requestidlecallback": "^0.3.4",
