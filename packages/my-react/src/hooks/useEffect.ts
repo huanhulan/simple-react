@@ -1,3 +1,4 @@
+import { EFFECT_TAG } from '../constants';
 import { mutables } from '../mutables';
 
 const effectHookTag = 'effect';
@@ -6,9 +7,10 @@ export function cancelEffects(fiber: Fiber) {
   fiber?.hooks
     ?.filter((hook) => hook.tag === effectHookTag && hook.cancel)
     .forEach((effectHook: UseEffectHook) => {
-      // https://github.com/microsoft/TypeScript/issues/40201#issuecomment-678805128
-      // @ts-ignore
-      effectHook?.cancel();
+      if (effectHook.hasChanged || fiber.effectTag === EFFECT_TAG.DELETION)
+        // https://github.com/microsoft/TypeScript/issues/40201#issuecomment-678805128
+        // @ts-ignore
+        effectHook?.cancel();
     });
 }
 
@@ -27,17 +29,20 @@ const hasDepsChanged = (prevDeps: any[], nextDeps: any[]) =>
   prevDeps.some((dep) => !nextDeps.includes(dep));
 
 export function useEffect(effect: () => any, deps: any[]) {
-  const oldHook = mutables?.wipFiber?.alternate?.hooks?.[mutables.hookIndex];
+  (mutables.wipFiber as Fiber).hookIndex =
+    mutables?.wipFiber?.hooks?.length || 0;
+  const oldHook =
+    mutables?.wipFiber?.alternate?.hooks?.[mutables.wipFiber.hookIndex];
 
   const hasChanged = hasDepsChanged(oldHook ? oldHook.deps : undefined, deps);
 
   const hook = {
     tag: effectHookTag,
     effect: hasChanged ? effect : null,
-    cancel: hasChanged && oldHook && oldHook.cancel,
+    cancel: oldHook?.cancel,
+    hasChanged,
     deps,
   };
 
   mutables?.wipFiber?.hooks?.push(hook);
-  mutables.hookIndex += 1;
 }

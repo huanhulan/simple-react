@@ -98,7 +98,6 @@ function reconcileChildren(
 
 function updateFunctionComponent(fiber: Fiber) {
   mutables.wipFiber = fiber;
-  mutables.hookIndex = 0;
   fiber.hooks = [];
   const res = (fiber.type as FunctionComponent)(fiber.props);
   if (!res) {

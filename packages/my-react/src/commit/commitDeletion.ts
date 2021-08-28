@@ -1,3 +1,5 @@
+import { mutables } from '../mutables';
+
 export function commitDeletion(fiber: Fiber, container: Node) {
   if (
     fiber.dom &&
@@ -10,4 +12,7 @@ export function commitDeletion(fiber: Fiber, container: Node) {
     return;
   }
   commitDeletion(fiber.child, container);
+  mutables.deletions = mutables.deletions.filter(
+    (fiberToDelete) => fiberToDelete !== fiber
+  );
 }

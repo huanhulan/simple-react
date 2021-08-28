@@ -1,6 +1,5 @@
 export const mutables = {
   nextUnitOfWork: undefined,
-  hookIndex: -1,
   // work in progress root or wipRoot, keep track of the root of the fiber tree
   wipRoot: undefined,
   wipFiber: undefined,
@@ -10,7 +9,6 @@ export const mutables = {
   deletions: [],
 } as {
   nextUnitOfWork?: Fiber;
-  hookIndex: number;
   wipRoot?: Fiber;
   wipFiber?: Fiber;
   currentRoot?: Fiber;

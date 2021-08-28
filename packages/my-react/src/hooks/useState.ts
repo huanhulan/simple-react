@@ -1,4 +1,4 @@
-import { isNil, is } from 'ramda';
+import { is } from 'ramda';
 import { mutables } from '../mutables';
 
 /**
@@ -9,8 +9,11 @@ import { mutables } from '../mutables';
 export function useState<P>(
   initialState: P
 ): [P, (action: P | ((p: P) => P)) => void] {
-  const oldHooks = mutables.wipFiber?.alternate?.hooks;
-  const oldHook: StateHook<P> = oldHooks && oldHooks[mutables.hookIndex || 0];
+  (mutables.wipFiber as Fiber).hookIndex =
+    mutables?.wipFiber?.hooks?.length || 0;
+  const oldHooks = (mutables.wipFiber as Fiber)?.alternate?.hooks;
+  const oldHook: StateHook<P> =
+    oldHooks && oldHooks[(mutables.wipFiber as Fiber).hookIndex];
   const hook: StateHook<P> = {
     state: oldHook?.state || initialState,
     queue: [],
@@ -27,14 +30,12 @@ export function useState<P>(
       dom: mutables.currentRoot?.dom,
       props: mutables.currentRoot?.props as any,
       alternate: mutables.currentRoot,
+      hookIndex: -1,
     };
     mutables.nextUnitOfWork = mutables.wipRoot;
     mutables.deletions = [];
   };
   mutables.wipFiber?.hooks?.push(hook);
-  if (!isNil(mutables.hookIndex)) {
-    mutables.hookIndex += 1;
-  }
 
   return [hook.state, setState];
 }
