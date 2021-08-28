@@ -29,10 +29,8 @@ const hasDepsChanged = (prevDeps: any[], nextDeps: any[]) =>
   prevDeps.some((dep) => !nextDeps.includes(dep));
 
 export function useEffect(effect: () => any, deps: any[]) {
-  (mutables.wipFiber as Fiber).hookIndex =
-    mutables?.wipFiber?.hooks?.length || 0;
-  const oldHook =
-    mutables?.wipFiber?.alternate?.hooks?.[mutables.wipFiber.hookIndex];
+  const hookIndex = mutables?.wipFiber?.hooks?.length || 0;
+  const oldHook = mutables?.wipFiber?.alternate?.hooks?.[hookIndex];
 
   const hasChanged = hasDepsChanged(oldHook ? oldHook.deps : undefined, deps);
 

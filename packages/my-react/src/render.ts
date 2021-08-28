@@ -12,7 +12,6 @@ function mount(reactElm: MyReactElement, node: HTMLElement) {
       children: [reactElm],
     },
     alternate: mutables.currentRoot,
-    hookIndex: -1,
   };
   mutables.nextUnitOfWork = mutables.wipRoot;
 }

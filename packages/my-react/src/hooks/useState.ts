@@ -9,11 +9,9 @@ import { mutables } from '../mutables';
 export function useState<P>(
   initialState: P
 ): [P, (action: P | ((p: P) => P)) => void] {
-  (mutables.wipFiber as Fiber).hookIndex =
-    mutables?.wipFiber?.hooks?.length || 0;
+  const hookIndex = mutables?.wipFiber?.hooks?.length || 0;
   const oldHooks = (mutables.wipFiber as Fiber)?.alternate?.hooks;
-  const oldHook: StateHook<P> =
-    oldHooks && oldHooks[(mutables.wipFiber as Fiber).hookIndex];
+  const oldHook: StateHook<P> = oldHooks && oldHooks[hookIndex];
   const hook: StateHook<P> = {
     state: oldHook?.state || initialState,
     queue: [],
@@ -30,7 +28,6 @@ export function useState<P>(
       dom: mutables.currentRoot?.dom,
       props: mutables.currentRoot?.props as any,
       alternate: mutables.currentRoot,
-      hookIndex: -1,
     };
     mutables.nextUnitOfWork = mutables.wipRoot;
     mutables.deletions = [];
