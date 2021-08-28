@@ -20,6 +20,9 @@ export function createElement(
     props: {
       ...props,
       children: children.flat().map((child) => {
+        if (child === null || child === false) {
+          return null;
+        }
         return typeof child === 'object' ? child : createTextElement(child);
       }),
     },

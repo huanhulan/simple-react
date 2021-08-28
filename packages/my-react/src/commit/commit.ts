@@ -3,6 +3,7 @@ import { mutables } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
 import { commitDeletion } from './commitDeletion';
+import { cancelEffects, runEffects } from '../hooks';
 
 export function createDom(fiber: Fiber): Node {
   const dom =
@@ -42,11 +43,19 @@ export function commitWork(fiber?: Fiber) {
     throw new Error("Can't find a container element");
   }
 
-  if (fiber.effectTag === EFFECT_TAG.PLACEMENT && !isNil(fiber.dom)) {
-    domParent.appendChild(fiber.dom);
-  } else if (fiber.effectTag === EFFECT_TAG.UPDATE && !isNil(fiber.dom)) {
-    updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
+  if (fiber.effectTag === EFFECT_TAG.PLACEMENT) {
+    if (!isNil(fiber.dom)) {
+      domParent.appendChild(fiber.dom);
+    }
+    runEffects(fiber);
+  } else if (fiber.effectTag === EFFECT_TAG.UPDATE) {
+    cancelEffects(fiber);
+    if (!isNil(fiber.dom)) {
+      updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
+    }
+    runEffects(fiber);
   } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
+    cancelEffects(fiber);
     commitDeletion(fiber, domParent);
     return;
   }

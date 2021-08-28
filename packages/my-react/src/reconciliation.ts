@@ -27,11 +27,19 @@ function reconcileChildren(
     oldFiber != null // if the linked list of old fiber is longer than the current element list
   ) {
     const element = elements[index];
-    let newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: wipFiber,
-    } as Fiber;
+
+    let newFiber = (
+      element
+        ? {
+            type: element.type,
+            props: element.props,
+            parent: wipFiber,
+          }
+        : {
+            ...oldFiber,
+            effectTag: EFFECT_TAG.DELETION,
+          }
+    ) as Fiber;
 
     const sameType =
       !isNil(oldFiber) && !isNil(element) && element.type === oldFiber.type;

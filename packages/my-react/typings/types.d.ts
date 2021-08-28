@@ -10,9 +10,9 @@ declare interface MyReactElement<P = Record<string, unknown>> {
 
 declare type Key = string | number | any;
 
-declare type TextChild = string | number | boolean | null | undefined;
+declare type TextChild = string | number | boolean | undefined;
 
-declare type ComponentChild = MyReactElement<any>;
+declare type ComponentChild = MyReactElement<any> | null | boolean | undefined;
 declare type ComponentChildren = ComponentChild[];
 
 declare interface FunctionComponent<P = Record<string, unknown>> {
@@ -54,4 +54,11 @@ declare type Fiber<P = MyReactElement['props']> = {
   effectTag?: Effects;
   // to the fiber to support calling useState several times in the same component
   hooks?: StateHook[];
+};
+
+declare type UseEffectHook = {
+  tag: 'effect';
+  effect: () => any;
+  cancel?: () => any;
+  deps: any[];
 };
