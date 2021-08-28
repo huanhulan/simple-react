@@ -2,7 +2,7 @@
   "name": "my-react",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/typings/index.d.ts",
   "license": "MIT",
   "files": [
     "dist"
@@ -11,14 +11,15 @@
     "ramda": "^0.27.1"
   },
   "scripts": {
-    "build": "tsc -b",
-    "clean": "rm -rf ./dist && rm tsconfig.tsbuildinfo",
-    "watch": "tsc -b -w --preserveWatchOutput"
+    "build": "yarn clean && rollup --config",
+    "clean": "rm -rf ./dist"
   },
   "private": true,
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.2.5",
     "@types/ramda": "^0.27.44",
     "@types/requestidlecallback": "^0.3.4",
+    "rollup": "^2.56.3",
     "typescript": "^4.3.5"
   }
 }
