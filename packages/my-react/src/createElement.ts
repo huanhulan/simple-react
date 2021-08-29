@@ -1,3 +1,4 @@
+import { isNil } from 'ramda';
 import { TEXT_ELEMENT } from './constants';
 
 export function createTextElement(text: TextChild): MyReactElement {
@@ -19,12 +20,12 @@ export function createElement(
     type,
     props: {
       ...props,
-      children: children.flat().map((child) => {
-        if (child === null || child === false) {
-          return null;
-        }
-        return typeof child === 'object' ? child : createTextElement(child);
-      }),
+      children: children
+        .flat()
+        .filter((child) => !(isNil(child) || child === false))
+        .map((child) => {
+          return typeof child === 'object' ? child : createTextElement(child);
+        }),
     },
   };
 }

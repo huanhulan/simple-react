@@ -29,7 +29,7 @@ function App() {
     <div>
       {/* FIXME: fix reconciliation so that it can diff with null */}
       {/* @ts-ignore */}
-      {showCounter ? <Counter /> : <span />}
+      {showCounter && <Counter />}
       {/* @ts-ignore */}
       <button type="button" onClick={() => setShowCounter(!showCounter)}>
         {`${showCounter ? 'remove' : 'mount'} counter`}
