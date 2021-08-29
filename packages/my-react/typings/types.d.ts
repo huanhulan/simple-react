@@ -54,6 +54,7 @@ declare type Fiber<P = MyReactElement['props']> = {
   effectTag?: Effects;
   // to the fiber to support calling useState several times in the same component
   hooks?: StateHook[];
+  index: number;
 };
 
 declare type UseEffectHook = {

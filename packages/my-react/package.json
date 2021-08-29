@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "yarn clean && rollup --config",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist",
+    "tsc": "tsc --project tsconfig.json"
   },
   "private": true,
   "devDependencies": {

@@ -21,7 +21,6 @@ function reconcileChildren(
   let index = 0;
   let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
   let prevSibling: Fiber = {} as any;
-
   while (
     index < elements.length ||
     oldFiber != null // if the linked list of old fiber is longer than the current element list
@@ -34,6 +33,7 @@ function reconcileChildren(
             type: element.type,
             props: element.props,
             parent: wipFiber,
+            index,
           }
         : {
             ...oldFiber,

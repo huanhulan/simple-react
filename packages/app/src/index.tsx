@@ -27,10 +27,12 @@ function App() {
   return (
     /* @ts-ignore */
     <div>
-      {showCounter && <Counter />}
+      {/* FIXME: fix reconciliation so that it can diff with null */}
       {/* @ts-ignore */}
-      <button type="button" onClick={() => setShowCounter(false)}>
-        remove counter
+      {showCounter ? <Counter /> : <span />}
+      {/* @ts-ignore */}
+      <button type="button" onClick={() => setShowCounter(!showCounter)}>
+        {`${showCounter ? 'remove' : 'mount'} counter`}
         {/* @ts-ignore */}
       </button>
       {/* @ts-ignore */}
