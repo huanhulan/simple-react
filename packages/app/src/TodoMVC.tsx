@@ -64,8 +64,13 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   const clearCompleted = () => {
     model.clearCompleted();
   };
-  window.addEventListener('hashchange', () => setNowShowing(getRoute()));
-
+  useEffect(() => {
+    const handler = () => setNowShowing(getRoute());
+    window.addEventListener('hashchange', handler);
+    return () => {
+      window.removeEventListener('hashchange', handler);
+    };
+  }, [setNowShowing]);
   useEffect(() => {
     model.registerCallback(setTodo);
     return () => {
