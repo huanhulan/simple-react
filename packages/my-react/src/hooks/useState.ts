@@ -28,7 +28,6 @@ export function useState<P>(
       dom: mutables.currentRoot?.dom,
       props: mutables.currentRoot?.props as any,
       alternate: mutables.currentRoot,
-      index: 0,
     };
     mutables.nextUnitOfWork = mutables.wipRoot;
     mutables.deletions = [];

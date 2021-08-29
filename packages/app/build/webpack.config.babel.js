@@ -1,5 +1,5 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 
 /**
@@ -27,6 +27,7 @@ module.exports = function webpackConfig() {
         filename: 'index.html',
         template: './src/index.html',
       }),
+      new MiniCssExtractPlugin(),
     ],
     resolve: {
       extensions: ['.ts', '.tsx', '.jsx', '...'], // !important
@@ -37,6 +38,10 @@ module.exports = function webpackConfig() {
           test: /\.j|ts(x)?$/,
           use: ['babel-loader'],
           exclude: [/core-js/],
+        },
+        {
+          test: /\.css$/i,
+          use: [MiniCssExtractPlugin.loader, 'css-loader'],
         },
       ],
     },
