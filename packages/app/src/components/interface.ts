@@ -20,3 +20,9 @@ export interface FooterProps {
   completedCount: number;
   onClearCompleted: () => void;
 }
+
+export interface TodoHeaderProps {
+  newTodo: string;
+  handleNewTodoKeyDown: (e: any) => void;
+  updateNewTodo: (e: any) => void;
+}

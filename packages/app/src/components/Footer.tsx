@@ -1,7 +1,7 @@
 /** @jsx createElement */
 import { createElement } from 'my-react';
 import { FooterProps } from './interface';
-import { pluralize } from './helpers';
+import { pluralize } from '../helpers';
 
 export function TodoFooter({
   nowShowing,

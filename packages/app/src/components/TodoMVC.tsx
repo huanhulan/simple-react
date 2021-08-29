@@ -1,8 +1,9 @@
 /** @jsx createElement */
 import { createElement, useState, useEffect } from 'my-react';
-import { TodoModel } from './model';
+import { TodoModel } from '../model';
 import { TodoFooter } from './Footer';
 import { TodoItem } from './TodoItem';
+import { TodoHeader } from './TodoHeader';
 import { Todo } from './interface';
 
 const ENTER_KEY = 13;
@@ -86,21 +87,11 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   return (
     // @ts-ignore
     <div>
-      {/* @ts-ignore */}
-      <header className="header">
-        {/* @ts-ignore */}
-        <h1>Todos</h1>
-        {/* @ts-ignore */}
-        <input
-          className="new-todo"
-          placeholder="What needs to be done?"
-          value={newTodo}
-          onKeyDown={handleNewTodoKeyDown}
-          onInput={updateNewTodo}
-          autoFocus // eslint-disable-line
-        />
-        {/* @ts-ignore */}
-      </header>
+      <TodoHeader
+        newTodo={newTodo}
+        handleNewTodoKeyDown={handleNewTodoKeyDown}
+        updateNewTodo={updateNewTodo}
+      />
       {/* @ts-ignore */}
       <section className="main">
         {/* @ts-ignore */}

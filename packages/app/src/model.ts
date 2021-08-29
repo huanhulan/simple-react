@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { storage } from './helpers';
-import { Todo } from './interface';
+import { Todo } from './components/interface';
 
 export class TodoModel {
   todos: Todo[];

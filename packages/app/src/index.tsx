@@ -1,7 +1,6 @@
-/* eslint-disable no-console */
 /** @jsx createElement */
 import { createElement, render } from 'my-react';
-import { TodoMVC } from './TodoMVC';
+import { TodoMVC } from './components';
 import { TodoModel } from './model';
 import './index.css';
 
