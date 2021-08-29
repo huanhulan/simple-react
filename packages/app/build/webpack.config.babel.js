@@ -2,10 +2,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 
-/**
- * @returns {webpack.Configuration}
- */
-module.exports = function webpackConfig() {
+export default function webpackConfig() {
   return {
     mode: 'development',
     entry: {
@@ -16,7 +13,6 @@ module.exports = function webpackConfig() {
       open: false,
       historyApiFallback: true,
     },
-
     output: {
       filename: '[name].[contenthash:8].js',
       path: path.join(__dirname, '../dist'),
@@ -53,4 +49,4 @@ module.exports = function webpackConfig() {
       },
     },
   };
-};
+}
