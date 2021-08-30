@@ -1,6 +1,7 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
+import { env } from 'process';
 
 export default function webpackConfig() {
   return {
@@ -12,6 +13,10 @@ export default function webpackConfig() {
     devServer: {
       open: false,
       historyApiFallback: true,
+      port: env.port || 8080,
+      ...(env.host && {
+        host: env.host,
+      }),
     },
     output: {
       filename: '[name].[contenthash:8].js',
