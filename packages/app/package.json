@@ -36,7 +36,8 @@
     "uuid": "^8.3.2"
   },
   "scripts": {
+    "start": "webpack serve --config build/webpack.config.babel.js --progress",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --config build/webpack.config.babel.js --progress"
+    "tsc": "yarn workspace my-react run build && echo \"Runing tsc\" && tsc --project tsconfig.json && yarn workspace my-react run cleanup"
   }
 }

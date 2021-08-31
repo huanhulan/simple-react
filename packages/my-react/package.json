@@ -11,8 +11,8 @@
     "ramda": "^0.27.1"
   },
   "scripts": {
-    "build": "yarn clean && rollup --config",
-    "clean": "rm -rf ./dist",
+    "build": "yarn cleanup && rollup --config",
+    "cleanup": "echo \"Cleanup last build result\" && rm -rf ./dist",
     "tsc": "tsc --project tsconfig.json"
   },
   "private": true,
