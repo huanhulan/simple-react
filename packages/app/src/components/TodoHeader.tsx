@@ -8,20 +8,16 @@ export function TodoHeader({
   updateNewTodo,
 }: TodoHeaderProps) {
   return (
-    // @ts-ignore
     <header className="header">
-      {/* @ts-ignore */}
       <h1>Todos</h1>
-      {/* @ts-ignore */}
       <input
         className="new-todo"
         placeholder="What needs to be done?"
         value={newTodo}
         onKeyDown={handleNewTodoKeyDown}
         onInput={updateNewTodo}
-    autoFocus // eslint-disable-line
+        autoFocus // eslint-disable-line
       />
-      {/* @ts-ignore */}
     </header>
   );
 }

@@ -85,16 +85,14 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   );
   const completedCount = todos.length - activeTodoCount;
   return (
-    // @ts-ignore
     <div>
       <TodoHeader
         newTodo={newTodo}
         handleNewTodoKeyDown={handleNewTodoKeyDown}
         updateNewTodo={updateNewTodo}
       />
-      {/* @ts-ignore */}
+
       <section className="main">
-        {/* @ts-ignore */}
         <input
           className="toggle-all"
           type="checkbox"
@@ -114,12 +112,9 @@ export function TodoMVC({ model }: { model: TodoModel }) {
                 onCancel={cancel}
               />
             ))}
-            {/* @ts-ignore */}
           </ul>
         )}
-        {/* @ts-ignore */}
       </section>
-
       {!!(activeTodoCount || completedCount) && (
         <TodoFooter
           count={activeTodoCount}
@@ -128,7 +123,6 @@ export function TodoMVC({ model }: { model: TodoModel }) {
           onClearCompleted={clearCompleted}
         />
       )}
-      {/* @ts-ignore */}
     </div>
   );
 }

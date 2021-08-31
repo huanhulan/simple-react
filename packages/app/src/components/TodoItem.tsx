@@ -57,11 +57,8 @@ export function TodoItem({
   const id = v4();
 
   return (
-    // @ts-ignore
     <li className={className}>
-      {/* @ts-ignore */}
       <div className="view">
-        {/* @ts-ignore */}
         <input
           className="toggle"
           type="checkbox"
@@ -69,21 +66,19 @@ export function TodoItem({
           onChange={toggle}
           id={id}
         />
-        {/* @ts-ignore */}
+
         <label onDblClick={handleEdit} htmlFor={id}>
           {title}
-          {/* @ts-ignore */}
         </label>
-        {/* @ts-ignore */}
+
         <button
           type="button"
           className="destroy"
           onClick={handleDestroy}
           aria-label="destroy"
         />
-        {/* @ts-ignore */}
       </div>
-      {editing && ( // @ts-ignore
+      {editing && (
         <input
           className="edit"
           autoFocus // eslint-disable-line
@@ -93,7 +88,6 @@ export function TodoItem({
           onKeyDown={handleKeyDown}
         />
       )}
-      {/* @ts-ignore */}
     </li>
   );
 }
