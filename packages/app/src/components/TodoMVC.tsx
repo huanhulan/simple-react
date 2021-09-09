@@ -99,6 +99,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
           id={toggleAllId}
           type="checkbox"
           onClick={toggleAll}
+          disabled={!todos.length}
           checked={activeTodoCount === 0 && !!todos.length}
         />
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}

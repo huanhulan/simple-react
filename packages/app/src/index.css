@@ -255,6 +255,7 @@ body {
 }
 
 .toggle-all {
+	caret-color: transparent;
 	text-align: center;
 	border: none; /* Mobile Safari */
 	opacity: 0;
