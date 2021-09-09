@@ -2,6 +2,7 @@
   "name": "my-react",
   "version": "1.0.0",
   "main": "dist/index.js",
+  "type": "module",
   "types": "dist/typings/index.d.ts",
   "license": "MIT",
   "files": [

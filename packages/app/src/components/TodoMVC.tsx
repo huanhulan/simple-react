@@ -29,6 +29,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   const [nowShowing, setNowShowing] = useState<string>(getRoute());
   const [newTodo, setNewTodo] = useState<string>('');
   const [editing, setEditing] = useState<string>('');
+  const toggleAllId = 'toggle-all';
   const handleNewTodoKeyDown = (e: any) => {
     if (e.keyCode !== ENTER_KEY) return;
     e.preventDefault();
@@ -94,11 +95,14 @@ export function TodoMVC({ model }: { model: TodoModel }) {
 
       <section className="main">
         <input
-          className="toggle-all"
+          className={toggleAllId}
+          id={toggleAllId}
           type="checkbox"
-          onChange={toggleAll}
-          checked={activeTodoCount === 0}
+          onClick={toggleAll}
+          checked={activeTodoCount === 0 && !!todos.length}
         />
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label htmlFor={toggleAllId}>Mark all as complete</label>{' '}
         {!!shownTodos.length && ( // @ts-ignore
           <ul className="todo-list">
             {shownTodos.map((todo) => (

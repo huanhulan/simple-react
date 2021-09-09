@@ -1,6 +1,7 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import { env } from 'process';
 
 export default function webpackConfig() {
@@ -9,7 +10,7 @@ export default function webpackConfig() {
     entry: {
       index: './src/index.tsx',
     },
-    devtool: 'inline-source-map',
+    devtool: 'source-map',
     devServer: {
       open: false,
       historyApiFallback: true,
@@ -47,11 +48,9 @@ export default function webpackConfig() {
       ],
     },
     optimization: {
-      splitChunks: {
-        chunks: 'initial',
-        minSize: 30000,
-        maxAsyncRequests: 3,
-      },
+      minimize: true,
+      minimizer: ['...', new CssMinimizerPlugin()],
     },
+    mode: 'production',
   };
 }
