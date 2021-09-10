@@ -59,7 +59,7 @@ declare interface MemoHook<P> extends IHook {
   value: P;
 }
 
-declare type Hook = EffectHook | StateHook;
+declare type Hook = EffectHook | StateHook | MemoHook;
 
 declare type Fiber<P = MyReactElement['props']> = {
   type?: MyReactElement['type'];
