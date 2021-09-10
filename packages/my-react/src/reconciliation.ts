@@ -34,10 +34,7 @@ function reconcileChildren(
             props: element.props,
             parent: wipFiber,
           }
-        : {
-            ...oldFiber,
-            effectTag: EFFECT_TAG.DELETION,
-          }
+        : null
     ) as Fiber;
 
     const sameType =
