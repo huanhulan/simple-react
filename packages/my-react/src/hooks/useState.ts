@@ -1,5 +1,7 @@
 import { is } from 'ramda';
 import { mutables } from '../mutables';
+import { EFFECT_HOOK_TAG } from './hookTags';
+import { getHookState } from './getHookState';
 
 /**
  * When MyReact receives a new update during the render phase,
@@ -9,12 +11,11 @@ import { mutables } from '../mutables';
 export function useState<P>(
   initialState: P
 ): [P, (action: P | ((p: P) => P)) => void] {
-  const hookIndex = mutables?.wipFiber?.hooks?.length || 0;
-  const oldHooks = (mutables.wipFiber as Fiber)?.alternate?.hooks;
-  const oldHook: StateHook<P> = oldHooks && oldHooks[hookIndex];
+  const oldHook = getHookState() as StateHook<P>;
   const hook: StateHook<P> = {
     state: oldHook?.state || initialState,
     queue: [],
+    tag: EFFECT_HOOK_TAG.useState,
   };
   const actions = oldHook ? oldHook.queue : [];
   actions.forEach((action) => {

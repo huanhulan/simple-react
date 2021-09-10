@@ -37,10 +37,29 @@ declare type Ref<T> = RefObject<T> | RefCallback<T>;
 
 type Effects = 'PLACEMENT' | 'UPDATE' | 'DELETION';
 
-declare interface StateHook<P> {
+interface IHook {
+  tag: string;
+}
+
+declare interface StateHook<P> extends IHook {
   state: P;
   queue: Array<((param: P) => P) | P>;
 }
+
+declare interface EffectHook extends IHook {
+  effect: (() => any) | null;
+  cancel: any;
+  hasChanged: boolean;
+  deps?: any[];
+}
+
+declare interface MemoHook<P> extends IHook {
+  factory: () => P;
+  deps?: any[];
+  value: P;
+}
+
+declare type Hook = EffectHook | StateHook;
 
 declare type Fiber<P = MyReactElement['props']> = {
   type?: MyReactElement['type'];
@@ -53,7 +72,7 @@ declare type Fiber<P = MyReactElement['props']> = {
   sibling?: Fiber;
   effectTag?: Effects;
   // to the fiber to support calling useState several times in the same component
-  hooks?: StateHook[];
+  hooks?: Hooks[];
 };
 
 declare type UseEffectHook = {
