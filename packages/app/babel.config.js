@@ -1,15 +1,9 @@
 module.exports = function baseBabelConfig(api) {
   api.cache(true);
   return {
-    sourceType: 'unambiguous',
+    // sourceType: 'unambiguous',
     presets: [
-      [
-        '@babel/preset-env',
-        // {
-        //   useBuiltIns: 'usage',
-        //   corejs: 2,
-        // },
-      ],
+      ['@babel/preset-env'],
       [
         '@babel/preset-typescript',
         {

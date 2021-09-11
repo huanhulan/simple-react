@@ -6,7 +6,6 @@ import { env } from 'process';
 
 export default function webpackConfig() {
   return {
-    mode: 'development',
     entry: {
       index: './src/index.tsx',
     },
