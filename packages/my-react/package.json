@@ -1,18 +1,35 @@
 {
   "name": "my-react",
-  "version": "1.0.0",
-  "main": "dist/index.js",
+  "version": "0.0.1",
+  "description": "Simple React implementation",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "umd:main": "dist/index.umd.js",
+  "source": "./index.ts",
   "type": "module",
   "types": "dist/typings/index.d.ts",
   "license": "MIT",
   "files": [
     "dist"
   ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "production": "./dist/index.esm.js",
+      "development": "./index.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js",
+      "default":  "./dist/index.esm.js"
+    }
+  },
   "dependencies": {
     "ramda": "^0.27.1"
   },
   "scripts": {
-    "build": "yarn cleanup && rollup --config",
+    "build": "yarn cleanup && yarn build:umd & yarn build:esm & yarn build:cjs",
+    "build:umd": "rollup --config --format=umd",
+    "build:esm": "rollup --config",
+    "build:cjs": "rollup --config --format=cjs",
     "cleanup": "echo \"Cleanup last build result\" && rm -rf ./dist",
     "tsc": "tsc --project tsconfig.json"
   },
@@ -22,6 +39,7 @@
     "@rollup/plugin-typescript": "^8.2.5",
     "@types/ramda": "^0.27.44",
     "@types/requestidlecallback": "^0.3.4",
+    "minimist": "^1.2.5",
     "rollup": "^2.56.3",
     "typescript": "^4.3.5"
   }

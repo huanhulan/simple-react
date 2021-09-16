@@ -50,6 +50,6 @@ export default function webpackConfig() {
       minimize: true,
       minimizer: ['...', new CssMinimizerPlugin()],
     },
-    mode: 'production',
+    mode: 'development',
   };
 }
