@@ -35,7 +35,7 @@ export function updateDom(
   // Set new or changed properties
   Object.keys(nextProps)
     .filter(isProperty)
-    .filter(isNew(prevProps, nextProps))
+    // .filter(isNew(prevProps, nextProps))
     .forEach((name) => {
       dom[name] = nextProps[name];
     });

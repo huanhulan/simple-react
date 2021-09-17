@@ -16,7 +16,7 @@ export function TodoItem({
   onCancel,
   onEdit,
 }: TodoItemProps) {
-  const { title, completed } = todo;
+  const { title, completed, id } = todo;
   const [editText, setEditText] = useState('');
   const className = `${completed ? 'completed' : ''} ${
     editing ? ' editing' : ''
@@ -54,7 +54,6 @@ export function TodoItem({
       handleSubmit();
     }
   };
-  const id = v4();
 
   return (
     <li className={className}>
