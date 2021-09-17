@@ -19,7 +19,7 @@ declare type ComponentChildren = ComponentChild[];
 
 declare interface FunctionComponent<P = Record<string, unknown>> {
   // eslint-disable-next-line
-  (props: RenderableProps<P>, context?: any): MyReactElement<any> | null;
+  (props: RenderableProps<P>, ref?: Ref<any>): MyReactElement<any> | null;
   displayName?: string;
   defaultProps?: Partial<P>;
 }

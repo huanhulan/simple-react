@@ -7,7 +7,7 @@ export function TodoHeader({
   handleNewTodoKeyDown,
   updateNewTodo,
 }: TodoHeaderProps) {
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (!inputRef.current) {
       return;
