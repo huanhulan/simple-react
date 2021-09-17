@@ -1,7 +1,5 @@
-/* @ts-nocheck */
 /** @jsx createElement */
 import { createElement, useState } from 'my-react';
-import { v4 } from 'uuid';
 import { TodoItemProps } from './interface';
 
 const ESCAPE_KEY = 27;
@@ -62,7 +60,7 @@ export function TodoItem({
           className="toggle"
           type="checkbox"
           checked={completed}
-          onChange={toggle}
+          onClick={toggle}
           id={id}
         />
 
