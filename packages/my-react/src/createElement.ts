@@ -13,7 +13,7 @@ export function createTextElement(text: TextChild): MyReactElement {
 
 export function createElement(
   type: ComponentType | string,
-  props: Record<string, unknown>,
+  props: Record<string, any>,
   ...children: ComponentChildren
 ): MyReactElement {
   return {
@@ -27,5 +27,6 @@ export function createElement(
           return typeof child === 'object' ? child : createTextElement(child);
         }),
     },
+    ref: props?.ref,
   };
 }

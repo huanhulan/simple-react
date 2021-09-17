@@ -6,6 +6,8 @@ declare interface MyReactElement<P = Record<string, unknown>> {
   type: ComponentType<P> | string;
   // eslint-disable-next-line
   props: P & { children: ComponentChildren } & { key?: Key };
+  // eslint-disable-next-line
+  ref?: Ref<any>;
 }
 
 declare type Key = string | number | any;
@@ -73,6 +75,7 @@ declare type Fiber<P = MyReactElement['props']> = {
   effectTag?: Effects;
   // to the fiber to support calling useState several times in the same component
   hooks?: Hooks[];
+  ref?: Ref<any> | null;
 };
 
 declare type UseEffectHook = {

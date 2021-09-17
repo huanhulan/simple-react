@@ -33,6 +33,7 @@ function reconcileChildren(
             type: element.type,
             props: element.props,
             parent: wipFiber,
+            ref: element.ref,
           }
         : null
     ) as Fiber;

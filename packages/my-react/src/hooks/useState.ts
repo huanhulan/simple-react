@@ -1,6 +1,6 @@
 import { is } from 'ramda';
 import { mutables } from '../mutables';
-import { EFFECT_HOOK_TAG } from './hookTags';
+import { HOOK_TAG } from './hookTags';
 import { getHookState } from './getHookState';
 
 /**
@@ -11,11 +11,18 @@ import { getHookState } from './getHookState';
 export function useState<P>(
   initialState: P
 ): [P, (action: P | ((p: P) => P)) => void] {
+  const tag = HOOK_TAG.useState;
   const oldHook = getHookState() as StateHook<P>;
+
+  if (oldHook && oldHook.tag !== tag) {
+    // eslint-disable-next-line quotes
+    throw new Error("Hook tag doesn't match with the previous fiber");
+  }
+
   const hook: StateHook<P> = {
     state: oldHook?.state || initialState,
     queue: [],
-    tag: EFFECT_HOOK_TAG.useState,
+    tag,
   };
   const actions = oldHook ? oldHook.queue : [];
   actions.forEach((action) => {

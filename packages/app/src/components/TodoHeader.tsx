@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement } from 'my-react';
+import { createElement, useRef, useEffect } from 'my-react';
 import { TodoHeaderProps } from './interface';
 
 export function TodoHeader({
@@ -7,10 +7,20 @@ export function TodoHeader({
   handleNewTodoKeyDown,
   updateNewTodo,
 }: TodoHeaderProps) {
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (!inputRef.current) {
+      return;
+    }
+
+    inputRef.current.focus();
+  }, []);
+
   return (
     <header className="header">
       <h1>Todos</h1>
       <input
+        ref={inputRef}
         className="new-todo"
         placeholder="What needs to be done?"
         value={newTodo}
