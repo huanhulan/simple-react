@@ -1,9 +1,10 @@
 /** @jsx createElement */
-import { createElement, useState } from 'my-react';
+import { createElement, useState, useCallback } from 'my-react';
 import { TodoItemProps } from './interface';
+import { Input } from './Input';
 
-const ESCAPE_KEY = 27;
-const ENTER_KEY = 13;
+const ESCAPE_KEY = 'ESCAPE';
+const ENTER_KEY = 'ENTER';
 
 export function TodoItem({
   todo,
@@ -19,18 +20,28 @@ export function TodoItem({
   const className = `${completed ? 'completed' : ''} ${
     editing ? ' editing' : ''
   }`;
-  const toggle = (e: any) => {
-    onToggle(todo);
-    e.preventDefault();
-  };
-  const handleEdit = () => {
-    onEdit(todo);
-    setEditText(title);
-  };
-  const handleDestroy = () => {
+  const toggle = useCallback(
+    (e: MouseEvent) => {
+      onToggle(todo);
+      e.preventDefault();
+    },
+    [onToggle, todo]
+  );
+
+  const handleEdit = useCallback(
+    (e: MouseEvent) => {
+      onEdit(todo);
+      setEditText(title);
+      e.preventDefault();
+    },
+    [onEdit, setEditText, todo, title]
+  );
+
+  const handleDestroy = useCallback(() => {
     onDestroy(todo);
-  };
-  const handleSubmit = () => {
+  }, [onDestroy, todo]);
+
+  const handleSubmit = useCallback(() => {
     const val = editText.trim();
     if (val) {
       onSave(todo, val);
@@ -38,20 +49,28 @@ export function TodoItem({
     } else {
       onDestroy(todo);
     }
-  };
+  }, [onSave, setEditText, onDestroy, todo]);
 
   const updateEditText = (e: any) => {
     setEditText(e?.target?.value);
   };
 
-  const handleKeyDown = (e: any) => {
-    if (e.which === ESCAPE_KEY) {
-      setEditText(title);
-      onCancel(todo);
-    } else if (e.which === ENTER_KEY) {
-      handleSubmit();
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key.toUpperCase() === ESCAPE_KEY) {
+        setEditText(title);
+        onCancel(todo);
+      } else if (e.key.toUpperCase() === ENTER_KEY) {
+        handleSubmit();
+      }
+    },
+    [setEditText, onCancel, todo, handleSubmit]
+  );
+
+  const handleLabelClick = useCallback(
+    (e: MouseEvent) => e.preventDefault(),
+    []
+  );
 
   return (
     <li className={className}>
@@ -63,11 +82,10 @@ export function TodoItem({
           onClick={toggle}
           id={id}
         />
-
-        <label onDblClick={handleEdit} htmlFor={id}>
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
+        <label onDblClick={handleEdit} htmlFor={id} onClick={handleLabelClick}>
           {title}
         </label>
-
         <button
           type="button"
           className="destroy"
@@ -76,7 +94,7 @@ export function TodoItem({
         />
       </div>
       {editing && (
-        <input
+        <Input
           className="edit"
           autoFocus // eslint-disable-line
           value={editText}

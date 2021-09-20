@@ -14,6 +14,9 @@ function applyRef<T>(ref: Ref<T>, value: T) {
 }
 
 export function createDom(fiber: Fiber): Node {
+  if (!is(String, fiber.type)) {
+    throw new Error('createDom can only accept string type');
+  }
   const dom =
     fiber.type === TEXT_ELEMENT
       ? document.createTextNode('')

@@ -1,26 +1,17 @@
 /** @jsx createElement */
-import { createElement, useRef, useEffect } from 'my-react';
+import { createElement } from 'my-react';
 import { TodoHeaderProps } from './interface';
+import { Input } from './Input';
 
 export function TodoHeader({
   newTodo,
   handleNewTodoKeyDown,
   updateNewTodo,
 }: TodoHeaderProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (!inputRef.current) {
-      return;
-    }
-
-    inputRef.current.focus();
-  }, []);
-
   return (
     <header className="header">
       <h1>Todos</h1>
-      <input
-        ref={inputRef}
+      <Input
         className="new-todo"
         placeholder="What needs to be done?"
         value={newTodo}
