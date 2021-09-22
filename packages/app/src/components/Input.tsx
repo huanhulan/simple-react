@@ -9,8 +9,8 @@ export function Input({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (autoFocus && inputRef.current) {
-      inputRef.current.focus();
+    if (autoFocus) {
+      inputRef?.current?.focus();
     }
   }, []);
   return <input ref={inputRef} {...props} type="input" />;
