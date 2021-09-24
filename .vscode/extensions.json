@@ -4,6 +4,7 @@
     "rbbit.typescript-hero",
     "esbenp.prettier-vscode",
     "streetsidesoftware.code-spell-checker",
-    "ecmel.vscode-html-css"
+    "ecmel.vscode-html-css",
+    "orta.vscode-jest"
   ]
 }

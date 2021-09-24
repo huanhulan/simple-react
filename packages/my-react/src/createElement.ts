@@ -14,7 +14,7 @@ export function createTextElement(text: TextChild): MyReactElement {
 export function createElement(
   type: ComponentType | string,
   props: Record<string, any>,
-  ...children: ComponentChildren
+  ...children: ComponentChildren | ComponentChildren[]
 ): MyReactElement {
   return {
     type,

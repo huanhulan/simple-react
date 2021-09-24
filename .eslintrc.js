@@ -36,6 +36,7 @@ module.exports = {
       },
     },
   },
+  root: true,
   rules: {
     quotes: ['error', 'single'],
     'no-shadow': 'off',

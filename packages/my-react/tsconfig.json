@@ -5,9 +5,20 @@
     "outDir": "typings",
     "rootDir": ".",
     "target": "es5",
-    "lib": ["dom", "ES2019"]
+    "lib": ["dom", "ES2019"],
+    "baseUrl": ".",
+    "paths": {
+      "test-utils": ["utils/test-utils.ts"]
+    }
   },
   "files": ["./index.ts"],
-  "include": ["./src/**/*", "./typings/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "jest.setup.js",
+    "./src/**/*",
+    "./typings/**/*",
+    "./utils/**/*",
+    "__tests__"
+  ],
+  "exclude": ["node_modules", "dist"],
+  "types": ["@types/node", "@types/jest"]
 }
