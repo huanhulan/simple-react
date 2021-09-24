@@ -1,6 +1,5 @@
 import { render, createElement } from "../index";
 import { getExampleDOM } from "test-utils";
-import { requestIdleCallback } from "@shopify/jest-dom-mocks";
 
 test("Check rendering of a functional component with a prop", async () => {
   const container = getExampleDOM();
@@ -13,8 +12,6 @@ test("Check rendering of a functional component with a prop", async () => {
     createElement(Greeting as FunctionComponent, { name: "NDC" }),
     container
   );
-
-  requestIdleCallback.runIdleCallbacks();
 
   expect(container.querySelector("p")).not.toBeNull();
   expect(container.querySelector("p")).toContainHTML("Hello, NDC");
