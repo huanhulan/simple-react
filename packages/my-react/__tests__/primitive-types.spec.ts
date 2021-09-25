@@ -1,19 +1,19 @@
-import { getExampleDOM } from "test-utils";
-import { render, createElement } from "../index";
+import { getExampleDOM } from 'test-utils';
+import { render, createElement } from '../index';
 
-test("Check rendering of a primitive type child", () => {
+test('Check rendering of a primitive type child', () => {
   const container = getExampleDOM();
 
   render(
     createElement(
-      "div",
+      'div',
       {},
-      "Hello universe",
-      createElement("p", {}, "Hello world")
+      'Hello universe',
+      createElement('p', {}, 'Hello world')
     ),
     container
   );
 
-  expect(container.querySelector("div")).toContainHTML("Hello universe");
-  expect(container.querySelector("div")).toContainHTML("Hello world");
+  expect(container.querySelector('div')).toContainHTML('Hello universe');
+  expect(container.querySelector('div')).toContainHTML('Hello world');
 });

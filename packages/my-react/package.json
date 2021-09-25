@@ -31,8 +31,9 @@
     "build:esm": "rollup --config",
     "build:cjs": "rollup --config --format=cjs",
     "cleanup": "echo \"Cleanup last build result\" && rm -rf ./dist",
-    "tsc": "tsc --project tsconfig.json",
-    "test": "jest"
+    "lint": "eslint -c ./.eslintrc.json ./__tests__ ./src",
+    "test": "jest",
+    "tsc": "tsc --project tsconfig.json"
   },
   "private": true,
   "devDependencies": {
@@ -57,11 +58,10 @@
     "@types/jest": "^27.0.2",
     "@types/ramda": "^0.27.44",
     "@types/requestidlecallback": "^0.3.4",
-    "@typescript-eslint/eslint-plugin": "^4.31.2",
-    "@typescript-eslint/parser": "^4.31.2",
+    "@types/uuid": "^8.3.1",
     "babel-jest": "^27.2.1",
+    "eslint": "^7.2.0",
     "eslint-import-resolver-typescript": "^2.5.0",
-    "eslint-plugin-import": "^2.24.2",
     "faker": "^5.5.3",
     "jest": "^27.2.1",
     "minimist": "^1.2.5",

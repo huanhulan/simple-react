@@ -9,7 +9,7 @@ const data = new Array<unknown>(faker.datatype.number)
       .map(() => faker.lorem.word())
   );
 
-test.each(data)('Check creation of React elements', async (...testData) => {
+test.each(data)('Check creation of React elements', (...testData) => {
   const prop = faker.datatype.string();
   const element = createElement('p', { myProp: prop }, ...testData);
 
@@ -27,7 +27,7 @@ test.each(data)('Check creation of React elements', async (...testData) => {
 
 test.each(data)(
   'Check createElement handles an array of children',
-  async (...testData) => {
+  (...testData) => {
     const prop = faker.datatype.string();
     const element = createElement('p', { myProp: prop }, testData);
 
@@ -44,7 +44,7 @@ test.each(data)(
   }
 );
 
-test('Check createElement can be nested', async () => {
+test('Check createElement can be nested', () => {
   const prop = faker.datatype.string();
   const anotherProp = faker.datatype.string();
   const element = createElement(

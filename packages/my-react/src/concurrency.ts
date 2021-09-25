@@ -3,7 +3,7 @@ import { performUnitOfWork } from './reconciliation';
 import { commitRoot } from './commit';
 
 function performWorkSync(deadline?: IdleDeadline) {
-  if (!mutables.nextUnitOfWork || deadline && deadline.timeRemaining() < 1) {
+  if (!mutables.nextUnitOfWork || (deadline && deadline.timeRemaining() < 1)) {
     return;
   }
   mutables.nextUnitOfWork = performUnitOfWork(mutables.nextUnitOfWork);

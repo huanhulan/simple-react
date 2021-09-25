@@ -7,5 +7,11 @@
   "eslint.alwaysShowStatus": true,
   "cSpell.words": ["rambda"],
   "typescript.tsdk": "node_modules/typescript/lib",
-  "eslint.packageManager": "yarn"
+  "eslint.packageManager": "yarn",
+  "eslint.workingDirectories": [
+    {
+      "directory": "packages/my-react",
+      "changeProcessCWD": true
+    }
+  ]
 }
