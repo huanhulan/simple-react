@@ -5,7 +5,7 @@ declare type ComponentType<P = Record<string, unknown>> = FunctionComponent<P>;
 declare interface MyReactElement<P = Record<string, unknown>> {
   type: ComponentType<P> | string;
   // eslint-disable-next-line
-  props: P & { children: ComponentChildren } & { key?: Key };
+  props: P & { children: ComponentChild[] } & { key?: Key };
   // eslint-disable-next-line
   ref?: Ref<any>;
 }
@@ -15,7 +15,7 @@ declare type Key = string | number | any;
 declare type TextChild = string | number | boolean | undefined;
 
 declare type ComponentChild = MyReactElement<any> | null | false | undefined;
-declare type ComponentChildren = ComponentChild[];
+declare type ComponentChildren = Array<ComponentChild | TextChild>;
 
 declare interface FunctionComponent<P = Record<string, unknown>> {
   // eslint-disable-next-line
@@ -47,21 +47,18 @@ declare interface StateHook<P> extends IHook {
   state: P;
   queue: Array<((param: P) => P) | P>;
 }
-
-declare interface EffectHook extends IHook {
-  effect: (() => any) | null;
-  cancel: any;
-  hasChanged: boolean;
-  deps?: any[];
-}
-
 declare interface MemoHook<P> extends IHook {
   factory: () => P;
   deps?: any[];
   value: P;
 }
 
-declare type Hook = EffectHook | StateHook | MemoHook;
+declare interface EffectHook extends IHook {
+  effect?: () => () => void | void;
+  cancel?: () => void;
+  deps: any[];
+  hasChanged: boolean;
+}
 
 declare type Fiber<P = MyReactElement['props']> = {
   type?: MyReactElement['type'];
@@ -74,14 +71,6 @@ declare type Fiber<P = MyReactElement['props']> = {
   sibling?: Fiber;
   effectTag?: Effects;
   // to the fiber to support calling useState several times in the same component
-  hooks?: Hooks[];
+  hooks?: IHook[];
   ref?: Ref<any> | null;
-};
-
-declare type UseEffectHook = {
-  tag: 'effect';
-  effect: () => any;
-  cancel?: () => any;
-  deps: any[];
-  hasChanged: boolean;
 };

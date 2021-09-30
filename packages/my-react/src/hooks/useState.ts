@@ -32,11 +32,10 @@ export function useState<P>(
   });
   const setState = (action: ((p: P) => P) | P) => {
     hook.queue.push(action);
-    mutables.wipRoot = {
-      dom: mutables.currentRoot?.dom,
-      props: mutables.currentRoot?.props as any,
-      alternate: mutables.currentRoot,
-    };
+
+    // restart diff from top of the tree
+    mutables.wipRoot = mutables.currentRoot;
+    (mutables.currentRoot as Fiber).alternate = mutables.currentRoot;
     mutables.nextUnitOfWork = mutables.wipRoot;
     mutables.deletions = [];
   };

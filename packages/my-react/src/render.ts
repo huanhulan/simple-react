@@ -22,5 +22,5 @@ function mount(reactElm: MyReactElement, node: HTMLElement) {
  */
 export function render(reactElm: MyReactElement, node: HTMLElement) {
   mount(reactElm, node);
-  requestIdleCallback(workLoop);
+  workLoop();
 }
