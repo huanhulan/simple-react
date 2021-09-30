@@ -34,6 +34,7 @@
     "@babel/runtime": "^7.15.3",
     "my-react": "*",
     "ramda": "^0.27.1",
+    "requestidlecallback-polyfill": "^1.0.2",
     "uuid": "^8.3.2"
   },
   "scripts": {
