@@ -22,9 +22,9 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
+    "build": "yarn workspace my-react build && yarn workspace app build",
     "commit": "cz",
-    "start": "yarn workspace app start",
-    "build": "yarn workspace my-react build"
+    "start": "yarn workspace app start"
   },
   "config": {
     "commitizen": {
