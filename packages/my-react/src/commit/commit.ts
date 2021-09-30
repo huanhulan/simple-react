@@ -108,4 +108,5 @@ export function commitRoot() {
   }
   mutables.currentRoot = wipRoot;
   mutables.wipRoot = undefined;
+  mutables.wipFiber = undefined;
 }
