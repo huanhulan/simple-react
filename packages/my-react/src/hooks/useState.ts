@@ -1,5 +1,5 @@
 import { is } from 'ramda';
-import { mutables } from '../mutables';
+import { mutables, rerender } from '../mutables';
 import { HOOK_TAG } from './hookTags';
 import { getHookState } from './getHookState';
 
@@ -38,6 +38,7 @@ export function useState<P>(
     (mutables.currentRoot as Fiber).alternate = mutables.currentRoot;
     mutables.nextUnitOfWork = mutables.wipRoot;
     mutables.deletions = [];
+    rerender();
   };
   mutables.wipFiber?.hooks?.push(hook);
 
