@@ -22,7 +22,7 @@ export class TodoModel {
   }
 
   unregisterCallback(sub: (todos: Todo[]) => void) {
-    this.onChanges.filter((cb) => cb !== sub);
+    this.onChanges = this.onChanges.filter((cb) => cb !== sub);
   }
 
   inform() {
