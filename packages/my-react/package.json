@@ -23,6 +23,7 @@
     }
   },
   "dependencies": {
+    "mitt": "^3.0.0",
     "ramda": "^0.27.1"
   },
   "scripts": {

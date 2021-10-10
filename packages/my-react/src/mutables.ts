@@ -1,3 +1,14 @@
+import mitt from 'mitt';
+import { curry } from 'ramda';
+
+const emitter = mitt();
+export const evt = 'rerender';
+
+export const onRerender: (cb: () => void) => void = curry(emitter.on)(
+  evt as any
+);
+export const rerender = () => emitter.emit(evt);
+
 export const mutables = {
   nextUnitOfWork: undefined,
   // work in progress root or wipRoot, keep track of the root of the fiber tree

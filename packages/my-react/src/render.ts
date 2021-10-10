@@ -1,6 +1,6 @@
 import { isNil } from 'ramda';
 import { mutables } from './mutables';
-import { workLoop } from './concurrency';
+import { process } from './concurrency';
 
 function mount(reactElm: MyReactElement, node: HTMLElement) {
   if (isNil(reactElm)) {
@@ -22,5 +22,5 @@ function mount(reactElm: MyReactElement, node: HTMLElement) {
  */
 export function render(reactElm: MyReactElement, node: HTMLElement) {
   mount(reactElm, node);
-  workLoop();
+  process();
 }
