@@ -8,7 +8,7 @@
   "parserOptions": {
     "project": "tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "import"],
+  "plugins": ["@typescript-eslint", "import", "jest"],
   "settings": {
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"]
@@ -22,7 +22,7 @@
   "rules": {
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": ["**/*.spec.ts", "**/test-utils.ts"] }
+      { "devDependencies": ["**/*.spec.ts", "**/test-utils.ts", "jest.*.js"] }
     ],
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/unbound-method": "off"

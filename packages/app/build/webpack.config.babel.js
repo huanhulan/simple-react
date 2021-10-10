@@ -44,7 +44,6 @@ export default function webpackConfig() {
         {
           test: /\.j|ts(x)?$/,
           use: ['babel-loader'],
-          exclude: [/core-js/],
         },
         {
           test: /\.css$/i,

@@ -1,7 +1,7 @@
 module.exports = function baseBabelConfig(api) {
   api.cache(true);
   return {
-    // sourceType: 'unambiguous',
+    sourceType: 'unambiguous',
     presets: [
       ['@babel/preset-env'],
       [
