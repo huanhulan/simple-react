@@ -14,7 +14,7 @@ test('Check rendering of a functional component with a prop', () => {
       })
     ),
   ]
-    .fill(1)
+    .fill([])
     .map(() => faker.lorem.sentence());
   function Greeting({ contents }: { contents: string[] }) {
     const [realContents, setRealContents] = useState(contents);

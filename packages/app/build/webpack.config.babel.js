@@ -32,6 +32,7 @@ export default function webpackConfig() {
           viewport: 'width=device-width, initial-scale=1, shrink-to-fit=no',
         },
         title: 'TodoMVC',
+        charset: 'UTF-8',
       }),
       new MiniCssExtractPlugin(),
     ],
