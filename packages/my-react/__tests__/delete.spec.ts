@@ -1,10 +1,9 @@
-import { fireEvent } from '@testing-library/dom';
+import { fireEvent, waitFor } from '@testing-library/dom';
 import { getExampleDOM } from 'test-utils';
-import { requestIdleCallback } from '@shopify/jest-dom-mocks';
 import faker from 'faker';
 import { render, createElement, useState, useCallback } from '../index';
 
-test('Check rendering of a functional component with a prop', () => {
+test('Check rendering of a functional component with a prop', async () => {
   const container = getExampleDOM();
   const testData = [
     new Array(
@@ -42,14 +41,16 @@ test('Check rendering of a functional component with a prop', () => {
   );
 
   expect(container.querySelectorAll('p')?.length).toBe(testData.length);
-
+  const expection = (i: number) => {
+    return () => expect(container.querySelectorAll('p')?.length).toBe(i);
+  };
   // eslint-disable-next-line no-plusplus
   for (let i = testData.length - 1; i > -1; i--) {
     fireEvent(
       container.querySelector('button') as HTMLButtonElement,
       new MouseEvent('click')
     );
-    requestIdleCallback.runIdleCallbacks();
-    expect(container.querySelectorAll('p')?.length).toBe(i);
+    // eslint-disable-next-line no-await-in-loop
+    await waitFor(expection(i));
   }
 });

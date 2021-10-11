@@ -10,7 +10,7 @@ function performWorkSync() {
   performWorkSync();
 }
 
-let scheduled = false;
+let scheduled: Promise<void> | undefined;
 
 export function process() {
   performWorkSync();
@@ -18,19 +18,18 @@ export function process() {
   if (!mutables.nextUnitOfWork && mutables.wipRoot) {
     commitRoot();
   }
-  scheduled = false;
+  scheduled = undefined;
 }
 
 const workLoop = (sync?: boolean) => {
   if (scheduled) {
     return;
   }
-  scheduled = true;
   if (sync) {
     process();
     return;
   }
-  requestIdleCallback(process);
+  scheduled = Promise.resolve().then(process);
 };
 
 onRerender(workLoop);
