@@ -35,6 +35,10 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
     },
+    // turn off eslint-plugin-react warnings
+    react: {
+      version: '16.3',
+    },
   },
   root: true,
   rules: {
