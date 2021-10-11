@@ -17,16 +17,12 @@ export function TodoItem({
 }: TodoItemProps) {
   const { title, completed, id } = todo;
   const [editText, setEditText] = useState('');
-  const className = `${completed ? 'completed' : ''} ${
-    editing ? ' editing' : ''
-  }`;
-  const toggle = useCallback(
-    (e: MouseEvent) => {
-      onToggle(todo);
-      e.preventDefault();
-    },
-    [onToggle, todo]
-  );
+  const className = [completed ? 'completed' : '', editing ? ' editing' : '']
+    .filter((s) => !!s)
+    .join(' ');
+  const toggle = useCallback(() => {
+    onToggle(todo);
+  }, [onToggle, todo]);
 
   const handleEdit = useCallback(
     (e: MouseEvent) => {
@@ -75,11 +71,11 @@ export function TodoItem({
   return (
     <li className={className}>
       <div className="view">
-        <input
+        <Input
           className="toggle"
           type="checkbox"
           checked={completed}
-          onClick={toggle}
+          onChange={toggle}
           id={id}
         />
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
@@ -95,6 +91,7 @@ export function TodoItem({
       </div>
       {editing && (
         <Input
+          type="input"
           className="edit"
           autoFocus // eslint-disable-line
           value={editText}
