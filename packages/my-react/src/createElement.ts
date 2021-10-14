@@ -5,7 +5,7 @@ export function createTextElement(text: TextChild): MyReactElement {
   return {
     type: TEXT_ELEMENT,
     props: {
-      nodeValue: text,
+      nodeValue: text, // xss safe
       children: [],
     },
   };

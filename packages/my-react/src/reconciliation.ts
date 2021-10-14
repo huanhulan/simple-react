@@ -1,8 +1,19 @@
-import { isNil } from 'ramda';
+import { isNil, equals } from 'ramda';
 import { isFunctionComponent } from './isFunctionComponent';
 import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
 import { mutables } from './mutables';
+
+function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (!equals(keysA, keysB)) {
+    return false;
+  }
+  return keysA.reduce((curr, key) => {
+    return curr && a[key] === b[key];
+  }, true);
+}
 
 function walkFiberTree(fiber?: Fiber): Fiber | undefined {
   if (!fiber) {
@@ -49,12 +60,23 @@ function reconcileChildren(
      * we can keep the DOM node and just update it with the new props
      */
     if (sameType) {
+      const propChanged = !shallowEqObj(
+        newFiber.props,
+        (oldFiber as Fiber).props
+      );
       newFiber = {
         ...newFiber,
         dom: oldFiber?.dom,
         alternate: oldFiber,
-        effectTag: EFFECT_TAG.UPDATE,
       };
+      if (propChanged) {
+        newFiber.effectTag = EFFECT_TAG.UPDATE;
+        let tmpFiber = newFiber;
+        while (tmpFiber.parent) {
+          tmpFiber.effectTag = EFFECT_TAG.UPDATE;
+          tmpFiber = tmpFiber.parent;
+        }
+      }
     }
 
     /**

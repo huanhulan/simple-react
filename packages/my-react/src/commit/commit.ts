@@ -106,6 +106,7 @@ export function commitRoot() {
   if (wipRoot?.child) {
     commitWork(wipRoot.child);
   }
+  mutables.deletions = [];
   mutables.currentRoot = wipRoot;
   mutables.wipRoot = undefined;
   mutables.wipFiber = undefined;
