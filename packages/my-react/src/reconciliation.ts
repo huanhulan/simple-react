@@ -76,6 +76,7 @@ function reconcileChildren(
           tmpFiber.effectTag = EFFECT_TAG.UPDATE;
           tmpFiber = tmpFiber.parent;
         }
+        delete oldFiber?.alternate;
       }
     }
 
