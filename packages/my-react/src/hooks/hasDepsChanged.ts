@@ -2,4 +2,5 @@ export const hasDepsChanged = (prevDeps?: any[], nextDeps?: any[]) =>
   !prevDeps ||
   !nextDeps ||
   prevDeps.length !== nextDeps.length ||
-  prevDeps.some((dep) => !nextDeps.includes(dep));
+  prevDeps.some((dep) => !nextDeps.includes(dep)) ||
+  nextDeps.some((dep) => !prevDeps.includes(dep));
