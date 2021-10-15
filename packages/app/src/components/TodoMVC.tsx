@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, useState, useEffect, useCallback } from 'my-react';
+import { createElement, useState, useEffect, useEventCallback } from 'my-react';
 import { TodoModel } from '../model';
 import { TodoFooter } from './Footer';
 import { TodoItem } from './TodoItem';
@@ -30,63 +30,43 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   const [newTodo, setNewTodo] = useState<string>('');
   const [editing, setEditing] = useState<string>('');
   const toggleAllId = 'toggle-all';
-  const handleNewTodoKeyDown = useCallback(
-    (e: any) => {
-      if (e.keyCode !== ENTER_KEY) return;
-      e.preventDefault();
 
-      const val = newTodo.trim();
-      if (val) {
-        model.addTodo(val);
-        setNewTodo('');
-      }
-    },
-    [model.addTodo, setNewTodo]
-  );
-  const updateNewTodo = useCallback(
-    (e: any) => {
-      setNewTodo(e.target.value);
-    },
-    [setNewTodo]
-  );
-  const toggle = useCallback(
-    (todo: Todo) => {
-      model.toggle(todo);
-    },
-    [model.toggle]
-  );
-  const destroy = useCallback(
-    (todo: Todo) => {
-      model.destroy(todo);
-    },
-    [model.destroy]
-  );
-  const edit = useCallback(
-    (todo: Todo) => {
-      setEditing(todo.id);
-    },
-    [setEditing]
-  );
-  const save = useCallback(
-    (todoToSave: Todo, text: string) => {
-      model.save(todoToSave, text);
-      setEditing('');
-    },
-    [model.save, setEditing]
-  );
-  const toggleAll = useCallback(
-    (e: any) => {
-      const { checked } = e.target;
-      model.toggleAll(checked);
-    },
-    [model.toggleAll]
-  );
-  const cancel = useCallback(() => {
+  const handleNewTodoKeyDown = useEventCallback((e: any) => {
+    if (e.keyCode !== ENTER_KEY) return;
+    e.preventDefault();
+
+    const val = newTodo.trim();
+    if (val) {
+      model.addTodo(val);
+      setNewTodo('');
+    }
+  });
+  const updateNewTodo = useEventCallback((e: any) => {
+    setNewTodo(e.target.value);
+  });
+  const toggle = useEventCallback((todo: Todo) => {
+    model.toggle(todo);
+  });
+  const destroy = useEventCallback((todo: Todo) => {
+    model.destroy(todo);
+  });
+  const edit = useEventCallback((todo: Todo) => {
+    setEditing(todo.id);
+  });
+  const save = useEventCallback((todoToSave: Todo, text: string) => {
+    model.save(todoToSave, text);
     setEditing('');
-  }, [setEditing]);
-  const clearCompleted = useCallback(() => {
+  });
+  const toggleAll = useEventCallback((e: any) => {
+    const { checked } = e.target;
+    model.toggleAll(checked);
+  });
+  const cancel = useEventCallback(() => {
+    setEditing('');
+  });
+  const clearCompleted = useEventCallback(() => {
     model.clearCompleted();
-  }, [model.clearCompleted]);
+  });
   useEffect(() => {
     const handler = () => setNowShowing(getRoute());
     window.addEventListener('hashchange', handler);
@@ -100,6 +80,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
       model.unregisterCallback(setTodo);
     };
   }, [setTodo]);
+
   const shownTodos = todos.filter(FILTERS[nowShowing]);
   const activeTodoCount = todos.reduce(
     (a, todo) => a + (todo.completed ? 0 : 1),

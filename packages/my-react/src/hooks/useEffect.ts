@@ -32,7 +32,7 @@ export function runEffects(fiber: Fiber) {
     });
 }
 
-export function useEffect(effect: () => any, deps: any[]) {
+export function useEffect(effect: () => any, deps?: any[]) {
   const tag = HOOK_TAG.useEffect;
   const oldHook = getHookState();
 

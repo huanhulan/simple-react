@@ -56,7 +56,7 @@ declare interface MemoHook<P> extends IHook {
 declare interface EffectHook extends IHook {
   effect?: () => () => void | void;
   cancel?: () => void;
-  deps: any[];
+  deps?: any[];
   hasChanged: boolean;
 }
 

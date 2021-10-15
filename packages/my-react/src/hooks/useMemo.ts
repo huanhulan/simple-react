@@ -17,7 +17,12 @@ function getMemoHook<P>(factory: () => P, deps: any[], tag: HOOK_TAG) {
       factory,
     };
   }
-  return oldHook;
+  return oldHook as {
+    tag: HOOK_TAG;
+    value: P;
+    deps: any[];
+    factory: () => P;
+  };
 }
 
 export function useMemo<P>(
