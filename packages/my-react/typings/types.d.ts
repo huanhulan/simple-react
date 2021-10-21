@@ -14,12 +14,16 @@ declare type Key = string | number | any;
 
 declare type TextChild = string | number | boolean | undefined;
 
-declare type ComponentChild = MyReactElement<any> | null | false | undefined;
+declare type ComponentChild =
+  | MyReactElement<Record<string, any>>
+  | null
+  | false
+  | undefined;
 declare type ComponentChildren = Array<ComponentChild | TextChild>;
 
 declare interface FunctionComponent<P = Record<string, unknown>> {
   // eslint-disable-next-line
-  (props: RenderableProps<P>, ref?: Ref<any>): MyReactElement<any> | null;
+  (props: RenderableProps<P>, ref?: Ref<any>): MyReactElement<Record<string, any>> | null;
   displayName?: string;
   defaultProps?: Partial<P>;
 }
@@ -61,6 +65,7 @@ declare interface EffectHook extends IHook {
 }
 
 declare type Fiber<P = MyReactElement['props']> = {
+  key?: Key;
   type?: MyReactElement['type'];
   dom?: Node;
   props: P;
