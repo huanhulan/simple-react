@@ -2,35 +2,33 @@ import { mutables, onRerender } from './mutables';
 import { performUnitOfWork } from './reconciliation';
 import { commitRoot } from './commit';
 
-function performWorkSync() {
+let scheduled: number | undefined;
+
+function performWorkSync(deadline?: IdleDeadline) {
   if (!mutables.nextUnitOfWork) {
+    if (mutables.wipRoot) {
+      commitRoot();
+    }
+    scheduled = undefined;
+    return;
+  }
+  if (deadline && deadline.timeRemaining() < 1) {
+    requestIdleCallback(performWorkSync);
     return;
   }
   mutables.nextUnitOfWork = performUnitOfWork(mutables.nextUnitOfWork);
   performWorkSync();
 }
 
-let scheduled = false;
-
-export function process() {
-  performWorkSync();
-  // once we finish all the work we commit the whole fiber tree to the DOM.
-  if (!mutables.nextUnitOfWork && mutables.wipRoot) {
-    commitRoot();
-  }
-  scheduled = false;
-}
-
-const workLoop = (sync?: boolean) => {
+export const workLoop = (sync?: boolean) => {
   if (scheduled) {
     return;
   }
-  scheduled = true;
   if (sync) {
-    process();
+    performWorkSync();
     return;
   }
-  requestIdleCallback(process);
+  scheduled = requestIdleCallback(performWorkSync as () => void);
 };
 
 onRerender(workLoop);

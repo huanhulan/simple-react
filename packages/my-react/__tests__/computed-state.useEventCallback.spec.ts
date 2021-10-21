@@ -18,6 +18,7 @@ function Excel({
 }) {
   const [c1, setC1] = useState(1);
   const [c2, setC2] = useState(2);
+  const [c3, setC3] = useState(3);
   const onChange1 = useEventCallback(
     (e: InputEvent & { target: HTMLInputElement }) => {
       setC1(Number(e.target.value || 0));
@@ -28,12 +29,19 @@ function Excel({
       setC2(Number(e.target.value || 0));
     }
   );
+  const onChange3 = useEventCallback(
+    (e: InputEvent & { target: HTMLInputElement }) => {
+      setC3(Number(e.target.value || 0));
+    }
+  );
   useEffect(() => {
     onComputedChange(c1 + c2);
     return () => {
       onRelease();
     };
   }, [onComputedChange, c1, c2]);
+  const computed1 = c1 + c2;
+  const computed2 = computed1 + c3;
   return createElement(
     'div',
     {},
@@ -49,7 +57,14 @@ function Excel({
       id: 'cell2',
       type: 'number',
     }),
-    createElement('p', {}, c1 + c2)
+    createElement('input', {
+      value: c3,
+      onChange: onChange3,
+      id: 'cell3',
+      type: 'number',
+    }),
+    createElement('p', { id: 'computed-1' }, computed1),
+    createElement('p', { id: 'computed-2' }, computed2)
   );
 }
 const container = getExampleDOM();
@@ -67,7 +82,6 @@ describe('Check state updates can work for computed values', () => {
     );
   });
   test('Should render the component correctly', () => {
-    expect(container.querySelector('p')).toContainHTML('3');
     expect(container.querySelector('#cell1')).not.toBeNull();
     expect(container.querySelector('#cell2')).not.toBeNull();
     expect((container.querySelector('#cell1') as HTMLInputElement).value).toBe(
@@ -76,6 +90,8 @@ describe('Check state updates can work for computed values', () => {
     expect((container.querySelector('#cell2') as HTMLInputElement).value).toBe(
       '2'
     );
+    expect(container.querySelector('#computed-1')).toContainHTML('3');
+    expect(container.querySelector('#computed-2')).toContainHTML('6');
   });
   test('Check state updates correctly when c1/c2 changed', async () => {
     fireEvent.change(container.querySelector('#cell1') as HTMLInputElement, {
@@ -86,7 +102,7 @@ describe('Check state updates can work for computed values', () => {
     requestIdleCallback.runIdleCallbacks();
 
     await waitFor(() => {
-      expect(container.querySelector('p')).toContainHTML('4');
+      expect(container.querySelector('#computed-1')).toContainHTML('4');
     });
     await waitFor(() => {
       expect(onComputedChange).toHaveBeenCalledWith(4);
@@ -100,7 +116,7 @@ describe('Check state updates can work for computed values', () => {
     requestIdleCallback.runIdleCallbacks();
 
     await waitFor(() => {
-      expect(container.querySelector('p')).toContainHTML('7');
+      expect(container.querySelector('#computed-1')).toContainHTML('7');
     });
     await waitFor(() => {
       expect(onComputedChange).toBeCalledTimes(2);
@@ -110,6 +126,17 @@ describe('Check state updates can work for computed values', () => {
     });
     await waitFor(() => {
       expect(onComputedChange).toHaveBeenCalledWith(7);
+    });
+  });
+  test('Check state updates correctly when c3 changed', async () => {
+    fireEvent.change(container.querySelector('#cell3') as HTMLInputElement, {
+      target: {
+        value: '4',
+      },
+    });
+    requestIdleCallback.runIdleCallbacks();
+    await waitFor(() => {
+      expect(container.querySelector('#computed-2')).toContainHTML('11');
     });
   });
 });
