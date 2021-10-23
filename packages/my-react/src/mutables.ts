@@ -1,5 +1,5 @@
 import mitt from 'mitt';
-import { curry } from 'ramda';
+import { curry, omit } from 'ramda';
 
 const emitter = mitt();
 export const evt = 'rerender';
@@ -19,16 +19,18 @@ export const getInitialValue = () =>
     currentRoot: undefined,
     // keep track of the nodes we want to remove
     deletions: [],
+    moves: [],
   } as {
     nextUnitOfWork?: Fiber;
     wipRoot?: Fiber;
     wipFiber?: Fiber;
     currentRoot?: Fiber;
     deletions: Fiber[];
+    moves: Fiber[];
   });
 
 export const mutables = getInitialValue();
 
-export function reset() {
-  Object.assign(mutables, getInitialValue());
+export function reset(omitKeys: string[] = []) {
+  Object.assign(mutables, omit(omitKeys, getInitialValue()));
 }

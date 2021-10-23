@@ -1,8 +1,7 @@
 import { is, isNil } from 'ramda';
-import { mutables } from '../mutables';
+import { mutables, reset } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
-import { commitDeletion } from './commitDeletion';
 import { cancelEffects, runEffects } from '../hooks';
 
 function applyRef<T>(ref: Ref<T>, value: T) {
@@ -11,6 +10,27 @@ function applyRef<T>(ref: Ref<T>, value: T) {
     return;
   }
   ref.current = value;
+}
+
+function commitDeletion(fiber: Fiber, container: Node) {
+  if (fiber.ref) {
+    applyRef(fiber.ref, null);
+  }
+  cancelEffects(fiber);
+  if (
+    fiber.dom &&
+    Array.from(container.childNodes).includes(fiber.dom as any)
+  ) {
+    container.removeChild(fiber.dom);
+    return;
+  }
+  if (!fiber.child) {
+    return;
+  }
+  commitDeletion(fiber.child, container);
+  mutables.deletions = mutables.deletions.filter(
+    (fiberToDelete) => fiberToDelete !== fiber
+  );
 }
 
 export function createDom(fiber: Fiber): Node {
@@ -106,8 +126,7 @@ export function commitRoot() {
   if (wipRoot?.child) {
     commitWork(wipRoot.child);
   }
-  mutables.deletions = [];
+  // cleanup
   mutables.currentRoot = wipRoot;
-  mutables.wipRoot = undefined;
-  mutables.wipFiber = undefined;
+  reset(['currentRoot', 'nextUnitOfWork']);
 }
