@@ -12,25 +12,37 @@ function applyRef<T>(ref: Ref<T>, value: T) {
   ref.current = value;
 }
 
+function getChildFibers(fiber: Fiber) {
+  const children = [];
+
+  let tmp = fiber.child;
+  while (tmp) {
+    children.push(tmp);
+    tmp = tmp.sibling;
+  }
+  return children;
+}
+
 function commitDeletion(fiber: Fiber, container: Node) {
   if (fiber.ref) {
     applyRef(fiber.ref, null);
   }
-  cancelEffects(fiber);
+
   if (
     fiber.dom &&
     Array.from(container.childNodes).includes(fiber.dom as any)
   ) {
-    container.removeChild(fiber.dom);
-    return;
+    fiber.dom?.parentElement?.removeChild(fiber.dom);
   }
+  cancelEffects(fiber);
   if (!fiber.child) {
     return;
   }
-  commitDeletion(fiber.child, container);
   mutables.deletions = mutables.deletions.filter(
     (fiberToDelete) => fiberToDelete !== fiber
   );
+
+  getChildFibers(fiber).forEach((fib) => commitDeletion(fib, container));
 }
 
 export function createDom(fiber: Fiber): Node {

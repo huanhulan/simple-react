@@ -42,6 +42,6 @@
     "lint": "eslint ./src",
     "start": "webpack serve --config build/webpack.config.babel.js --progress",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "yarn workspace my-react run build && echo \"Runing tsc\" && tsc --project tsconfig.json && yarn workspace my-react run cleanup"
+    "tsc": "echo \"Runing tsc\" && tsc --project tsconfig.json"
   }
 }
