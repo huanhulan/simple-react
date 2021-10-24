@@ -1,6 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+yarn workspace my-react cleanup
 yarn workspace my-react tsc
 yarn workspace my-react lint
 yarn workspace my-react test
