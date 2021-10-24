@@ -30,9 +30,12 @@ export function useState<P>(
       ? (action as (p: P) => P)(hook.state)
       : (action as P);
   });
+  const hookOwner = mutables.wipFiber;
   const setState = (action: ((p: P) => P) | P) => {
     hook.queue.push(action);
-
+    if (hookOwner) {
+      hookOwner.dirty = true;
+    }
     // restart diff from top of the tree
     mutables.wipRoot = mutables.currentRoot;
     (mutables.currentRoot as Fiber).alternate = mutables.currentRoot;

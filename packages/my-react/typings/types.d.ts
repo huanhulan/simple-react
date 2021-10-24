@@ -78,4 +78,5 @@ declare type Fiber<P = MyReactElement['props']> = {
   // to the fiber to support calling useState several times in the same component
   hooks?: IHook[];
   ref?: Ref<any> | null;
+  dirty?: boolean;
 };

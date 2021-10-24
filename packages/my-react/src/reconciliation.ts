@@ -69,13 +69,8 @@ function reconcileChildren(
         dom: oldFiber?.dom,
         alternate: oldFiber,
       };
-      if (propChanged) {
+      if (propChanged || oldFiber?.dirty) {
         newFiber.effectTag = EFFECT_TAG.UPDATE;
-        let tmpFiber = newFiber;
-        while (tmpFiber.parent) {
-          tmpFiber.effectTag = EFFECT_TAG.UPDATE;
-          tmpFiber = tmpFiber.parent;
-        }
         delete oldFiber?.alternate;
       }
     }
