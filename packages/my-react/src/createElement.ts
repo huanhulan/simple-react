@@ -12,7 +12,7 @@ export function createTextElement(text: TextChild): MyReactElement {
 }
 
 export function createElement(
-  type: ComponentType | string,
+  type: MyReactElement['type'],
   props: Record<string, any>,
   ...children: ComponentChildren | ComponentChildren[]
 ): MyReactElement {
