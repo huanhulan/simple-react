@@ -117,6 +117,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
                 editing={editing === todo.id}
                 onSave={save}
                 onCancel={cancel}
+                key={todo.id}
               />
             ))}
           </ul>

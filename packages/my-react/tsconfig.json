@@ -11,7 +11,7 @@
       "test-utils": ["./utils/test-utils.ts"]
     }
   },
-  "files": ["./index.ts"],
+  "files": ["./index.ts", "./index.d.ts"],
   "include": [
     "jest.setup.js",
     "./src/**/*",

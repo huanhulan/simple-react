@@ -1,12 +1,17 @@
 /** @jsx createElement */
-import { createElement, useState, useCallback } from 'my-react';
+import {
+  createElement,
+  useState,
+  useCallback,
+  FunctionComponent,
+} from 'my-react';
 import { TodoItemProps } from './interface';
 import { Input } from './Input';
 
 const ESCAPE_KEY = 'ESCAPE';
 const ENTER_KEY = 'ENTER';
 
-export function TodoItem({
+export const TodoItem: FunctionComponent<TodoItemProps> = ({
   todo,
   onToggle,
   onDestroy,
@@ -14,7 +19,7 @@ export function TodoItem({
   onSave,
   onCancel,
   onEdit,
-}: TodoItemProps) {
+}: TodoItemProps) => {
   const { title, completed, id } = todo;
   const [editText, setEditText] = useState('');
   const className = [completed ? 'completed' : '', editing ? ' editing' : '']
@@ -102,4 +107,4 @@ export function TodoItem({
       )}
     </li>
   );
-}
+};

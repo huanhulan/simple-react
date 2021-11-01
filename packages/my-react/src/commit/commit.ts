@@ -3,6 +3,7 @@ import { mutables, reset } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
 import { cancelEffects, runEffects } from '../hooks';
+import { getChildFibers } from '../libs';
 
 function applyRef<T>(ref: Ref<T>, value: T) {
   if (typeof ref === 'function') {
@@ -12,15 +13,36 @@ function applyRef<T>(ref: Ref<T>, value: T) {
   ref.current = value;
 }
 
-function getChildFibers(fiber: Fiber) {
-  const children = [];
-
-  let tmp = fiber.child;
-  while (tmp) {
-    children.push(tmp);
-    tmp = tmp.sibling;
+function upToFindFiberWithDom(fiber?: Fiber): Fiber {
+  if (!fiber?.dom) {
+    return upToFindFiberWithDom(fiber?.parent);
   }
-  return children;
+  return fiber;
+}
+
+function downToFindFibersWithDom(
+  fiber: Fiber,
+  container: HTMLElement
+): Fiber[] {
+  const children = getChildFibers(fiber);
+  return children
+    .map((fib) => {
+      if (fib?.dom?.parentElement === container) {
+        return [fib];
+      }
+      return downToFindFibersWithDom(fib, container);
+    })
+    .flat();
+}
+
+function commitMove(fiber: Fiber) {
+  const { dom: parentDom } = upToFindFiberWithDom(fiber);
+  const childrenNodes = downToFindFibersWithDom(
+    fiber,
+    parentDom as HTMLElement
+  ).map(({ dom }) => dom);
+  (parentDom as HTMLElement).innerHTML = '';
+  childrenNodes.forEach((node) => parentDom?.appendChild(node as HTMLElement));
 }
 
 function commitDeletion(fiber: Fiber, container: Node) {
@@ -133,11 +155,12 @@ export function commitWork(fiber?: Fiber) {
 }
 
 export function commitRoot() {
-  const { deletions, wipRoot } = mutables;
+  const { deletions, moves, wipRoot } = mutables;
   deletions.forEach(commitWork);
   if (wipRoot?.child) {
     commitWork(wipRoot.child);
   }
+  moves.forEach(commitMove);
   // cleanup
   mutables.currentRoot = wipRoot;
   reset(['currentRoot', 'nextUnitOfWork']);

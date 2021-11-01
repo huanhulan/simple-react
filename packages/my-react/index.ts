@@ -1,6 +1,8 @@
 import { createElement } from './src/MyReact';
 import { cloneElement } from './src/cloneElement';
 
+export * from './typings/types';
+
 const MyReact = {
   createElement,
   cloneElement,

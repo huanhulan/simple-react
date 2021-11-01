@@ -1,8 +1,8 @@
 // TODO: Class component
 // eslint-disable-next-line
-declare type ComponentType<P = Record<string, unknown>> = FunctionComponent<P>;
+export type ComponentType<P = Record<string, unknown>> = FunctionComponent<P>;
 
-declare interface MyReactElement<P = Record<string, unknown>> {
+export interface MyReactElement<P = Record<string, unknown>> {
   type: ComponentType<P> | string;
   // eslint-disable-next-line
   props: P & { children: ComponentChild[] } & { key?: Key };
@@ -10,61 +10,61 @@ declare interface MyReactElement<P = Record<string, unknown>> {
   ref?: Ref<any>;
 }
 
-declare type Key = string | number | any;
+export type Key = string | number | any;
 
-declare type TextChild = string | number | boolean | undefined;
+export type TextChild = string | number | boolean | undefined;
 
-declare type ComponentChild =
+export type ComponentChild =
   | MyReactElement<Record<string, any>>
   | null
   | false
   | undefined;
-declare type ComponentChildren = Array<ComponentChild | TextChild>;
+export type ComponentChildren = Array<ComponentChild | TextChild>;
 
-declare interface FunctionComponent<P = Record<string, unknown>> {
+export interface FunctionComponent<P = Record<string, unknown>> {
   // eslint-disable-next-line
   (props: RenderableProps<P>, ref?: Ref<any>): MyReactElement<Record<string, any>> | null;
   displayName?: string;
   defaultProps?: Partial<P>;
 }
 
-declare type RenderableProps<P, RefType = any> = P &
+export type RenderableProps<P, RefType = any> = P &
   // eslint-disable-next-line
   Readonly<Attributes & { children?: ComponentChildren; ref?: Ref<RefType> }>;
 
-declare interface Attributes {
+export interface Attributes {
   key?: Key;
   jsx?: boolean;
 }
 
-declare type RefObject<T> = { current: T | null };
-declare type RefCallback<T> = (instance: T | null) => void;
-declare type Ref<T> = RefObject<T> | RefCallback<T>;
+export type RefObject<T> = { current: T | null };
+export type RefCallback<T> = (instance: T | null) => void;
+export type Ref<T> = RefObject<T> | RefCallback<T>;
 
 type Effects = 'PLACEMENT' | 'UPDATE' | 'DELETION';
 
-interface IHook {
+export interface IHook {
   tag: string;
 }
 
-declare interface StateHook<P> extends IHook {
+export interface StateHook<P> extends IHook {
   state: P;
   queue: Array<((param: P) => P) | P>;
 }
-declare interface MemoHook<P> extends IHook {
+export interface MemoHook<P> extends IHook {
   factory: () => P;
   deps?: any[];
   value: P;
 }
 
-declare interface EffectHook extends IHook {
+export interface EffectHook extends IHook {
   effect?: () => () => void | void;
   cancel?: () => void;
   deps?: any[];
   hasChanged: boolean;
 }
 
-declare type Fiber<P = MyReactElement['props']> = {
+export type Fiber<P = MyReactElement['props']> = {
   key?: Key;
   type?: MyReactElement['type'];
   dom?: Node;
