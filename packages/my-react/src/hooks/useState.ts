@@ -35,6 +35,11 @@ export function useState<P>(
     hook.queue.push(action);
     if (hookOwner) {
       hookOwner.dirty = true;
+      let tmp = hookOwner.parent;
+      while (tmp) {
+        tmp.dirty = true;
+        tmp = tmp.parent;
+      }
     }
     // restart diff from top of the tree
     mutables.wipRoot = mutables.currentRoot;
@@ -44,6 +49,7 @@ export function useState<P>(
 
     rerender();
   };
+  setState.owner = hookOwner;
   mutables.wipFiber?.hooks?.push(hook);
 
   return [hook.state, setState];
