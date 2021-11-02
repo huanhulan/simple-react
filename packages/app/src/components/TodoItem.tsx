@@ -2,7 +2,7 @@
 import {
   createElement,
   useState,
-  useCallback,
+  useEventCallback,
   FunctionComponent,
 } from 'my-react';
 import { TodoItemProps } from './interface';
@@ -25,24 +25,26 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
   const className = [completed ? 'completed' : '', editing ? ' editing' : '']
     .filter((s) => !!s)
     .join(' ');
-  const toggle = useCallback(() => {
+  const toggle = useEventCallback(() => {
     onToggle(todo);
-  }, [onToggle, todo]);
+  });
 
-  const handleEdit = useCallback(
-    (e: MouseEvent) => {
-      onEdit(todo);
-      setEditText(title);
-      e.preventDefault();
-    },
-    [onEdit, setEditText, todo, title]
-  );
+  let escapePressed = false;
 
-  const handleDestroy = useCallback(() => {
+  const handleEdit = useEventCallback((e: MouseEvent) => {
+    onEdit(todo);
+    setEditText(title);
+    e.preventDefault();
+  });
+
+  const handleDestroy = useEventCallback(() => {
     onDestroy(todo);
-  }, [onDestroy, todo]);
+  });
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useEventCallback(() => {
+    if (escapePressed) {
+      return;
+    }
     const val = editText.trim();
     if (val) {
       onSave(todo, val);
@@ -50,27 +52,24 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
     } else {
       onDestroy(todo);
     }
-  }, [onSave, setEditText, onDestroy, todo]);
+  });
 
   const updateEditText = (e: any) => {
     setEditText(e?.target?.value);
   };
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key.toUpperCase() === ESCAPE_KEY) {
-        setEditText(title);
-        onCancel(todo);
-      } else if (e.key.toUpperCase() === ENTER_KEY) {
-        handleSubmit();
-      }
-    },
-    [setEditText, onCancel, todo, handleSubmit]
-  );
+  const handleKeyDown = useEventCallback((e: KeyboardEvent) => {
+    if (e.key.toUpperCase() === ESCAPE_KEY) {
+      setEditText(title);
+      onCancel(todo);
+      escapePressed = true;
+    } else if (e.key.toUpperCase() === ENTER_KEY) {
+      handleSubmit();
+    }
+  });
 
-  const handleLabelClick = useCallback(
-    (e: MouseEvent) => e.preventDefault(),
-    []
+  const handleLabelClick = useEventCallback((e: MouseEvent) =>
+    e.preventDefault()
   );
 
   return (
