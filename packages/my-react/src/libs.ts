@@ -18,11 +18,12 @@ export function swap<T>(list: Array<T>, l: number, r: number) {
   list[r] = k;
 }
 
-export function enqueueMove(fiber: Fiber) {
-  if (mutables.moves.includes(fiber)) {
+export function enqueueMove(fiber: Fiber, nodes: Node[]) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  if (mutables.moves.find(([fib, _]) => fib === fiber)) {
     return;
   }
-  mutables.moves.push(fiber);
+  mutables.moves.push([fiber, nodes]);
 }
 
 export function enqueueDelete(fiber: Fiber) {

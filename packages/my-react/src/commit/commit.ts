@@ -13,13 +13,6 @@ function applyRef<T>(ref: Ref<T>, value: T) {
   ref.current = value;
 }
 
-function upToFindFiberWithDom(fiber?: Fiber): Fiber {
-  if (!fiber?.dom) {
-    return upToFindFiberWithDom(fiber?.parent);
-  }
-  return fiber;
-}
-
 function downToFindFibersWithDom(fiber: Fiber): Fiber[] {
   const children = getChildFibers(fiber);
   return children
@@ -32,10 +25,8 @@ function downToFindFibersWithDom(fiber: Fiber): Fiber[] {
     .flat();
 }
 
-function sortDom(fiber: Fiber) {
-  const { dom: parentDom } = upToFindFiberWithDom(fiber);
-  const childrenNodes = downToFindFibersWithDom(fiber).map(({ dom }) => dom);
-  (parentDom as HTMLElement).innerHTML = '';
+function sortDom([fiber, childrenNodes]: [Fiber, Node[]]) {
+  const { dom: parentDom } = fiber;
   childrenNodes.forEach((node) => parentDom?.appendChild(node as HTMLElement));
 }
 
@@ -110,13 +101,17 @@ export function commitWork(fiber?: Fiber) {
   if (fiber.effectTag === EFFECT_TAG.PLACEMENT) {
     if (!isNil(fiber.dom)) {
       domParent.appendChild(fiber.dom);
+
       if (
         childrenFibersWithDom.indexOf(fiber) !==
         Array.from((domParent as HTMLElement).children).indexOf(
           fiber.dom as HTMLElement
         )
       ) {
-        enqueueMove(parentFiberWithDom);
+        enqueueMove(
+          parentFiberWithDom,
+          childrenFibersWithDom.map(({ dom }) => dom) as Node[]
+        );
       }
       if (fiber.ref) {
         applyRef(fiber.ref, fiber.dom);

@@ -26,7 +26,7 @@ export const getInitialValue = () =>
     wipFiber?: Fiber;
     currentRoot?: Fiber;
     deletions: Fiber[];
-    moves: Fiber[];
+    moves: Array<[Fiber, Node[]]>;
   });
 
 export const mutables = getInitialValue();
