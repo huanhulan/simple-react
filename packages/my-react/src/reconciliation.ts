@@ -3,7 +3,7 @@ import { isFunctionComponent } from './isFunctionComponent';
 import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
 import { mutables } from './mutables';
-import { getChildFibers, swap, enqueueDelete, enqueueMove } from './libs';
+import { getChildFibers, swap, enqueueDelete } from './libs';
 
 function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   const keysA = Object.keys(a);
@@ -185,9 +185,6 @@ function reconcileChildren(
       if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
         ns[newLastIndex] = os[oldLastIndex];
       }
-      if (oldFirstIndex !== newLastIndex || oldLastIndex !== newFirstIndex) {
-        enqueueMove(wipFiber);
-      }
 
       oldFirstIndex += 1;
       newFirstIndex += 1;
@@ -217,9 +214,6 @@ function reconcileChildren(
       }
       oldLastIndex -= 1;
       newLastIndex -= 1;
-      if (oldFirstIndex !== newLastIndex) {
-        enqueueMove(wipFiber);
-      }
     } else if (
       !isNil(newFirst.key) &&
       !isNil(oldLast.key) &&
@@ -239,10 +233,6 @@ function reconcileChildren(
 
       if (!diffFiber(os[oldFirstIndex], newFirst as Fiber)) {
         ns[newFirstIndex] = os[oldFirstIndex];
-      }
-
-      if (oldLastIndex !== newFirstIndex) {
-        enqueueMove(wipFiber);
       }
 
       oldFirstIndex += 1;
@@ -287,9 +277,6 @@ function reconcileChildren(
 
         // Move item to correct position
         os.splice(oldFirstIndex, 0, os.splice(tmp, 1)[0]);
-        if (tmp !== newFirstIndex) {
-          enqueueMove(wipFiber);
-        }
 
         if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
           ns[newFirstIndex] = os[oldFirstIndex];
@@ -311,7 +298,6 @@ function reconcileChildren(
          */
         newFirst.effectTag = EFFECT_TAG.PLACEMENT;
         os.splice(oldFirstIndex, 0, newFirst as Fiber);
-        enqueueMove(wipFiber);
         newFirstIndex += 1;
         oldFirstIndex += 1;
         oldLastIndex += 1;
