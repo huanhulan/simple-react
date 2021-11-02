@@ -3,7 +3,7 @@ import { isFunctionComponent } from './isFunctionComponent';
 import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
 import { mutables } from './mutables';
-import { getChildFibers, swap } from './libs';
+import { getChildFibers, swap, enqueueDelete, enqueueMove } from './libs';
 
 function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   const keysA = Object.keys(a);
@@ -26,26 +26,17 @@ function walkFiberTree(fiber?: Fiber): Fiber | undefined {
   return walkFiberTree(fiber.parent);
 }
 
-function enqueueMove(fiber: Fiber) {
-  if (mutables.moves.includes(fiber)) {
-    return;
-  }
-  mutables.moves.push(fiber);
-}
-
-function enqueueDelete(fiber: Fiber) {
-  if (mutables.deletions.includes(fiber)) {
-    return;
-  }
-  fiber.effectTag = EFFECT_TAG.DELETION;
-  mutables.deletions.push(fiber);
-}
-
-function diffFiber(oldFiber: Fiber, newFiber: Fiber) {
+/**
+ * Diff given fibers and return a indicator for whether to reuse the old fiber
+ * @param oldFiber
+ * @param newFiber
+ * @returns `true` for not reusing, `false` for reusing
+ */
+function diffFiber(oldFiber: Fiber, newFiber: Fiber): boolean {
   if (newFiber.type !== oldFiber.type) {
     enqueueDelete(oldFiber);
     newFiber.effectTag = EFFECT_TAG.PLACEMENT;
-    return;
+    return true;
   }
   const propChanged = !shallowEqObj(newFiber.props, oldFiber.props);
   newFiber.dom = oldFiber?.dom;
@@ -53,7 +44,10 @@ function diffFiber(oldFiber: Fiber, newFiber: Fiber) {
   if (propChanged || oldFiber?.dirty) {
     newFiber.effectTag = EFFECT_TAG.UPDATE;
     delete oldFiber?.alternate;
+    return true;
   }
+
+  return false;
 }
 
 // BFS children diff
@@ -152,7 +146,13 @@ function reconcileChildren(
        * -> newFirstIndex -> [ a b c ] <- newLastIndex
        * check if nFirst and oFirst align, if not, check nLast and oLast
        */
-      diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber);
+      if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
+        /**
+         * reuse fiber if no effect should happen,
+         * update it's sibling pointer and parent pointer latter
+         */
+        ns[newFirstIndex] = os[oldFirstIndex];
+      }
       oldFirstIndex += 1;
       newFirstIndex += 1;
     } else if (
@@ -160,7 +160,9 @@ function reconcileChildren(
       !isNil(newLast.key) &&
       oldLast.key === newLast.key
     ) {
-      diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber);
+      if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
+        ns[newLastIndex] = os[oldLastIndex];
+      }
       oldLastIndex -= 1;
       newLastIndex -= 1;
     } else if (
@@ -177,8 +179,12 @@ function reconcileChildren(
        */
       swap(os, oldFirstIndex, oldLastIndex);
 
-      diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber);
-      diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber);
+      if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
+        ns[newFirstIndex] = os[oldFirstIndex];
+      }
+      if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
+        ns[newLastIndex] = os[oldLastIndex];
+      }
       if (oldFirstIndex !== newLastIndex || oldLastIndex !== newFirstIndex) {
         enqueueMove(wipFiber);
       }
@@ -206,7 +212,9 @@ function reconcileChildren(
        */
       // move the head to the end of the list
       os.splice(oldLastIndex, 0, os.splice(oldFirstIndex, 1)[0]);
-      diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber);
+      if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
+        ns[newLastIndex] = os[oldLastIndex];
+      }
       oldLastIndex -= 1;
       newLastIndex -= 1;
       if (oldFirstIndex !== newLastIndex) {
@@ -229,7 +237,9 @@ function reconcileChildren(
        */
       os.splice(oldFirstIndex, 0, os.splice(oldLastIndex, 1)[0]);
 
-      diffFiber(os[oldFirstIndex], newFirst as Fiber);
+      if (!diffFiber(os[oldFirstIndex], newFirst as Fiber)) {
+        ns[newFirstIndex] = os[oldFirstIndex];
+      }
 
       if (oldLastIndex !== newFirstIndex) {
         enqueueMove(wipFiber);
@@ -281,7 +291,9 @@ function reconcileChildren(
           enqueueMove(wipFiber);
         }
 
-        diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber);
+        if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
+          ns[newFirstIndex] = os[oldFirstIndex];
+        }
 
         oldFirstIndex += 1;
         newFirstIndex += 1;
@@ -313,17 +325,32 @@ function reconcileChildren(
       wipFiber.child = el;
     }
     el.sibling = ns[idx + 1] as Fiber | undefined;
+    el.parent = wipFiber;
   });
 }
 
+// only run the constructor when there is a effect tag
 function updateFunctionComponent(fiber: Fiber) {
   mutables.wipFiber = fiber;
-  fiber.hooks = [];
-  const res = (fiber.type as FunctionComponent)(fiber.props);
+
+  let res: ComponentChild[] | ComponentChild;
+  if (isNil(fiber.effectTag)) {
+    res = fiber.props.children;
+  } else {
+    fiber.hooks = [];
+    res = (fiber.type as FunctionComponent)(fiber.props);
+  }
+
   if (!res) {
     return;
   }
+
   const children = Array.isArray(res) ? res : [res];
+  // remember the normalized result in case of fiber reusing
+  if (!isNil(fiber.effectTag)) {
+    fiber.props.children = children;
+  }
+
   reconcileChildren(fiber, children);
 }
 

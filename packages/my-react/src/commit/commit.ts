@@ -3,7 +3,7 @@ import { mutables, reset } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
 import { cancelEffects, runEffects } from '../hooks';
-import { getChildFibers } from '../libs';
+import { getChildFibers, enqueueMove } from '../libs';
 
 function applyRef<T>(ref: Ref<T>, value: T) {
   if (typeof ref === 'function') {
@@ -20,27 +20,21 @@ function upToFindFiberWithDom(fiber?: Fiber): Fiber {
   return fiber;
 }
 
-function downToFindFibersWithDom(
-  fiber: Fiber,
-  container: HTMLElement
-): Fiber[] {
+function downToFindFibersWithDom(fiber: Fiber): Fiber[] {
   const children = getChildFibers(fiber);
   return children
     .map((fib) => {
-      if (fib?.dom?.parentElement === container) {
+      if (fib?.dom) {
         return [fib];
       }
-      return downToFindFibersWithDom(fib, container);
+      return downToFindFibersWithDom(fib);
     })
     .flat();
 }
 
-function commitMove(fiber: Fiber) {
+function sortDom(fiber: Fiber) {
   const { dom: parentDom } = upToFindFiberWithDom(fiber);
-  const childrenNodes = downToFindFibersWithDom(
-    fiber,
-    parentDom as HTMLElement
-  ).map(({ dom }) => dom);
+  const childrenNodes = downToFindFibersWithDom(fiber).map(({ dom }) => dom);
   (parentDom as HTMLElement).innerHTML = '';
   childrenNodes.forEach((node) => parentDom?.appendChild(node as HTMLElement));
 }
@@ -104,7 +98,9 @@ export function commitWork(fiber?: Fiber) {
     return;
   }
 
-  const { dom: domParent } = findFiberWithDom(fiber.parent);
+  const parentFiberWithDom = findFiberWithDom(fiber.parent);
+  const childrenFibersWithDom = downToFindFibersWithDom(parentFiberWithDom);
+  const { dom: domParent } = parentFiberWithDom;
 
   if (!domParent) {
     // eslint-disable-next-line
@@ -114,6 +110,14 @@ export function commitWork(fiber?: Fiber) {
   if (fiber.effectTag === EFFECT_TAG.PLACEMENT) {
     if (!isNil(fiber.dom)) {
       domParent.appendChild(fiber.dom);
+      if (
+        childrenFibersWithDom.indexOf(fiber) !==
+        Array.from((domParent as HTMLElement).children).indexOf(
+          fiber.dom as HTMLElement
+        )
+      ) {
+        enqueueMove(parentFiberWithDom);
+      }
       if (fiber.ref) {
         applyRef(fiber.ref, fiber.dom);
       }
@@ -160,7 +164,7 @@ export function commitRoot() {
   if (wipRoot?.child) {
     commitWork(wipRoot.child);
   }
-  moves.forEach(commitMove);
+  moves.forEach(sortDom);
   // cleanup
   mutables.currentRoot = wipRoot;
   reset(['currentRoot', 'nextUnitOfWork']);

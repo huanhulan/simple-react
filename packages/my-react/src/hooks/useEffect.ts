@@ -45,13 +45,18 @@ export function useEffect(effect: () => any, deps?: any[]) {
     deps
   );
 
-  const hook: EffectHook = {
-    tag,
-    effect: hasChanged ? effect : undefined,
-    cancel: (oldHook as EffectHook)?.cancel,
-    hasChanged,
-    deps,
-  };
+  const hook: EffectHook = oldHook
+    ? Object.assign(oldHook, {
+        effect: hasChanged ? effect : undefined,
+        hasChanged,
+        deps,
+      })
+    : {
+        tag,
+        effect: hasChanged ? effect : undefined,
+        hasChanged,
+        deps,
+      };
 
   mutables?.wipFiber?.hooks?.push(hook);
 }
