@@ -5,4 +5,10 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <div id="container" class="todoapp"></div>
+  <% if (htmlWebpackPlugin.options.link){ %>
+  <footer class="info">
+    <p>Double-click to edit a todo</p>
+    <p>Created by <a href="<%= htmlWebpackPlugin.options.link %>"><%= htmlWebpackPlugin.options.author %></a></p>
+  </footer>
+  <% } %>
 </html>
