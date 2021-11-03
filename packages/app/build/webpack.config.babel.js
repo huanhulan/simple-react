@@ -37,6 +37,8 @@ export default async function webpackConfig() {
     // eslint-disable-next-line no-console
     console.error(e);
   }
+  const prod = 'production';
+  const mode = argv[argv.length - 1] === prod ? prod : 'development';
 
   return {
     entry: {
@@ -86,10 +88,12 @@ export default async function webpackConfig() {
         },
       ],
     },
-    optimization: {
-      minimize: true,
-      minimizer: ['...', new CssMinimizerPlugin()],
-    },
-    mode: argv[argv.length - 1] === 'production' ? 'production' : 'development',
+    ...(mode === prod && {
+      optimization: {
+        minimize: true,
+        minimizer: ['...', new CssMinimizerPlugin()],
+      },
+    }),
+    mode,
   };
 }
