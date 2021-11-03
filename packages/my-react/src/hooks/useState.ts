@@ -49,7 +49,6 @@ export function useState<P>(
 
     rerender();
   };
-  setState.owner = hookOwner;
   mutables.wipFiber?.hooks?.push(hook);
 
   return [hook.state, setState];

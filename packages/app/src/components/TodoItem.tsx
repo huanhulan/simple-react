@@ -29,6 +29,11 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
     onToggle(todo);
   });
 
+  /**
+   * HACK: since we are using native DOM event, so when the <input/> get destroyed,
+   * browser will fire the onBlur event and it's not cancellable. preact has this issue too due to the same reason.
+   * React on the other hand, using its own synthetic event. The onBlur event won't get triggered when the <input/> get destroyed.
+   */
   let escapePressed = false;
 
   const handleEdit = useEventCallback((e: MouseEvent) => {
