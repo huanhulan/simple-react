@@ -22,13 +22,13 @@ function Excel({
     (e: InputEvent & { target: HTMLInputElement }) => {
       setC1(Number(e.target.value || 0));
     },
-    [setC1]
+    [setC1],
   );
   const onChange2 = useCallback(
     (e: InputEvent & { target: HTMLInputElement }) => {
       setC2(Number(e.target.value || 0));
     },
-    [setC2]
+    [setC2],
   );
   useEffect(() => {
     onComputedChange(c1 + c2);
@@ -51,7 +51,7 @@ function Excel({
       id: 'cell2',
       type: 'number',
     }),
-    createElement('p', {}, c1 + c2)
+    createElement('p', {}, c1 + c2),
   );
 }
 const container = getExampleDOM();
@@ -65,7 +65,7 @@ describe('Check state updates can work for computed values', () => {
         onComputedChange,
         onRelease,
       }),
-      container
+      container,
     );
   });
   test('Should render the component correctly', () => {
@@ -73,10 +73,10 @@ describe('Check state updates can work for computed values', () => {
     expect(container.querySelector('#cell1')).not.toBeNull();
     expect(container.querySelector('#cell2')).not.toBeNull();
     expect((container.querySelector('#cell1') as HTMLInputElement).value).toBe(
-      '1'
+      '1',
     );
     expect((container.querySelector('#cell2') as HTMLInputElement).value).toBe(
-      '2'
+      '2',
     );
   });
   test('Check state updates correctly when c1/c2 changed', async () => {

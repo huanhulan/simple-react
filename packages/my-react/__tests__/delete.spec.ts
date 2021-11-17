@@ -11,7 +11,7 @@ test('Check rendering of a functional component with a prop', async () => {
       faker.random.number({
         min: 1,
         max: 200,
-      })
+      }),
     ),
   ]
     .fill([])
@@ -31,14 +31,14 @@ test('Check rendering of a functional component with a prop', async () => {
         {
           onClick: removeLastLine,
         },
-        ['click to delete a line']
+        ['click to delete a line'],
       ),
     ]);
   }
 
   render(
     createElement(Greeting as FunctionComponent, { contents: testData }),
-    container
+    container,
   );
 
   expect(container.querySelectorAll('p')?.length).toBe(testData.length);
@@ -49,7 +49,7 @@ test('Check rendering of a functional component with a prop', async () => {
   for (let i = testData.length - 1; i > -1; i--) {
     fireEvent(
       container.querySelector('button') as HTMLButtonElement,
-      new MouseEvent('click')
+      new MouseEvent('click'),
     );
     requestIdleCallback.runIdleCallbacks();
     // eslint-disable-next-line no-await-in-loop

@@ -9,9 +9,9 @@ test('Check rendering of a primitive type child', () => {
       'div',
       {},
       'Hello universe',
-      createElement('p', {}, 'Hello world')
+      createElement('p', {}, 'Hello world'),
     ),
-    container
+    container,
   );
 
   expect(container.querySelector('div')).toContainHTML('Hello universe');

@@ -1,9 +1,10 @@
-import { isNil, equals } from 'ramda';
-import { isFunctionComponent } from './isFunctionComponent';
+import { equals, isNil } from 'ramda';
+
 import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
+import { isFunctionComponent } from './isFunctionComponent';
+import { enqueueDelete, getChildFibers, swap } from './libs';
 import { mutables } from './mutables';
-import { getChildFibers, swap, enqueueDelete } from './libs';
 
 function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   const keysA = Object.keys(a);
@@ -11,9 +12,7 @@ function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   if (!equals(keysA, keysB)) {
     return false;
   }
-  return keysA.reduce((curr, key) => {
-    return curr && a[key] === b[key];
-  }, true);
+  return keysA.reduce((curr, key) => curr && a[key] === b[key], true);
 }
 
 function walkFiberTree(fiber?: Fiber): Fiber | undefined {
@@ -46,14 +45,15 @@ function diffFiber(oldFiber: Fiber, newFiber: Fiber): boolean {
     delete oldFiber?.alternate;
     return true;
   }
-
+  oldFiber.effectTag = undefined;
+  oldFiber.alternate = oldFiber;
   return false;
 }
 
 // BFS children diff
 function reconcileChildren(
   wipFiber: Fiber,
-  elements: Fiber['props']['children']
+  elements: Fiber['props']['children'],
 ) {
   const os = getChildFibers(wipFiber?.alternate as Fiber);
   const ns: Partial<Fiber>[] = elements
@@ -168,6 +168,8 @@ function reconcileChildren(
     } else if (
       !isNil(oldFirst.key) &&
       !isNil(newFirst.key) &&
+      !isNil(newLast.key) &&
+      !isNil(oldLast.key) &&
       oldFirst.key === newLast.key &&
       newFirst.key === oldLast.key
     ) {
@@ -251,13 +253,24 @@ function reconcileChildren(
        */
       found = false;
       tmp = oldFirstIndex;
-
-      while (tmp <= oldLastIndex) {
-        if (os[tmp].key === newFirst.key) {
-          found = true;
-          break;
+      if (!isNil(newFirst.key)) {
+        while (tmp <= oldLastIndex) {
+          if (os[tmp].key === newFirst.key) {
+            found = true;
+            break;
+          }
+          tmp += 1;
         }
-        tmp += 1;
+      } else {
+        tmp = oldFirstIndex;
+
+        while (tmp <= oldLastIndex) {
+          if (os[tmp].type === newFirst.type && os[tmp].key === undefined) {
+            found = true;
+            break;
+          }
+          tmp += 1;
+        }
       }
 
       if (found) {

@@ -1,6 +1,6 @@
+import { commitRoot } from './commit';
 import { mutables, onRerender } from './mutables';
 import { performUnitOfWork } from './reconciliation';
-import { commitRoot } from './commit';
 
 let scheduled: number | undefined;
 

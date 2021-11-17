@@ -15,8 +15,8 @@ function Greeting({ newState }: { newState: string }) {
       {
         onClick: () => setName(newState),
       },
-      'Expand your horizon'
-    )
+      'Expand your horizon',
+    ),
   );
 }
 
@@ -27,7 +27,7 @@ test('Check state updates correctly updates the DOM (fails with timeout if React
     createElement(Greeting as FunctionComponent, {
       newState: 'universe',
     }),
-    container
+    container,
   );
 
   expect(container.querySelector('p')).toContainHTML('Hello world');
@@ -35,7 +35,7 @@ test('Check state updates correctly updates the DOM (fails with timeout if React
 
   fireEvent(
     container.querySelector('button') as HTMLButtonElement,
-    new MouseEvent('click')
+    new MouseEvent('click'),
   );
   requestIdleCallback.runIdleCallbacks();
 

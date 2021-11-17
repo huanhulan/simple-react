@@ -1,10 +1,11 @@
 /** @jsx createElement */
-import { createElement, useState, useEffect, useEventCallback } from 'my-react';
+import { createElement, useEffect, useEventCallback, useState } from 'my-react';
+
 import { TodoModel } from '../model';
 import { TodoFooter } from './Footer';
-import { TodoItem } from './TodoItem';
-import { TodoHeader } from './TodoHeader';
 import { Todo } from './interface';
+import { TodoHeader } from './TodoHeader';
+import { TodoItem } from './TodoItem';
 
 const ENTER_KEY = 13;
 
@@ -84,7 +85,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   const shownTodos = todos.filter(FILTERS[nowShowing]);
   const activeTodoCount = todos.reduce(
     (a, todo) => a + (todo.completed ? 0 : 1),
-    0
+    0,
   );
   const completedCount = todos.length - activeTodoCount;
   return (

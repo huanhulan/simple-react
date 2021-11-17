@@ -25,7 +25,7 @@ describe('reconciliation should works fine', () => {
 
   function App({ withKey = true }: { withKey?: boolean }) {
     const [list, setList] = useState(
-      new Array(100).fill(1).map((_, idx) => idx)
+      new Array(100).fill(1).map((_, idx) => idx),
     );
     const [desc, setDesc] = useState(false);
     const onSort = useCallback(() => {
@@ -44,7 +44,7 @@ describe('reconciliation should works fine', () => {
       createElement(
         'button',
         { onClick: onSort },
-        `sort ${desc ? 'ascend' : 'decend'}`
+        `sort ${desc ? 'ascend' : 'decend'}`,
       ),
       ...list.map((n) =>
         createElement(Count as FunctionComponent, {
@@ -52,8 +52,8 @@ describe('reconciliation should works fine', () => {
           ...(withKey && {
             key: n,
           }),
-        })
-      )
+        }),
+      ),
     );
   }
   beforeEach(() => {
@@ -71,7 +71,7 @@ describe('reconciliation should works fine', () => {
     });
     fireEvent(
       container.querySelector('button') as HTMLButtonElement,
-      new MouseEvent('click')
+      new MouseEvent('click'),
     );
     requestIdleCallback.runIdleCallbacks();
 
@@ -85,14 +85,14 @@ describe('reconciliation should works fine', () => {
   test('should call update when sort when key is missing', async () => {
     render(
       createElement(App as FunctionComponent, { withKey: false }),
-      container
+      container,
     );
     onComponentWillUnmounts.forEach((fakeFn) => {
       expect(fakeFn).not.toHaveBeenCalled();
     });
     fireEvent(
       container.querySelector('button') as HTMLButtonElement,
-      new MouseEvent('click')
+      new MouseEvent('click'),
     );
     requestIdleCallback.runIdleCallbacks();
     await waitFor(() => {

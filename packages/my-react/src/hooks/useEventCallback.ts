@@ -3,7 +3,7 @@ import { useEffect } from './useEffect';
 import { useCallback } from './useCallback';
 
 export function useEventCallback<Args extends unknown[], Return>(
-  cb: (...args: Args) => Return
+  cb: (...args: Args) => Return,
 ) {
   const ref = useRef(cb);
   useEffect(() => {
@@ -11,6 +11,6 @@ export function useEventCallback<Args extends unknown[], Return>(
   }, [cb]);
   return useCallback(
     (...args: Args) => (ref.current as typeof cb)(...args),
-    []
+    [],
   );
 }

@@ -10,7 +10,7 @@ describe('cloneElement', () => {
       {
         prop1: 1,
       },
-      'hello'
+      'hello',
     );
     const clone = MyReact.cloneElement(instance);
 

@@ -10,7 +10,7 @@ const isGone = (next: Record<string, any>) => (key: string) => !(key in next);
 export function updateDom(
   dom: Node,
   prevProps: Fiber['props'],
-  nextProps: Fiber['props']
+  nextProps: Fiber['props'],
 ) {
   const prevStyle = (prevProps.style || {}) as Record<string, string>;
   const nextStyle = (nextProps.style || {}) as Record<string, string>;

@@ -21,6 +21,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: [
+    'prettier',
     'react',
     '@typescript-eslint',
     //  "react-hooks"
@@ -57,7 +58,7 @@ module.exports = {
     'prettier/prettier': [
       'error',
       {
-        singleQuote: true,
+        usePrettierrc: true,
       },
     ],
     'import/extensions': [

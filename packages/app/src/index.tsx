@@ -7,5 +7,5 @@ import './index.css';
 
 render(
   <TodoMVC model={new TodoModel('myReact-TodoMVC')} />,
-  document.getElementById('container') as HTMLDivElement
+  document.getElementById('container') as HTMLDivElement,
 );

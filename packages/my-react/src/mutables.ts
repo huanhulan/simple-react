@@ -5,7 +5,7 @@ const emitter = mitt();
 export const evt = 'rerender';
 
 export const onRerender: (cb: () => void) => void = curry(emitter.on)(
-  evt as any
+  evt as any,
 );
 export const rerender = () => emitter.emit(evt);
 
@@ -33,4 +33,8 @@ export const mutables = getInitialValue();
 
 export function reset(omitKeys: string[] = []) {
   Object.assign(mutables, omit(omitKeys, getInitialValue()));
+}
+
+if (process.env.NODE_ENV !== 'production') {
+  window['$$my_react-mutables'] = mutables;
 }

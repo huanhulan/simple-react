@@ -28,7 +28,7 @@ function getMemoHook<P>(factory: () => P, deps: any[], tag: HOOK_TAG) {
 export function useMemo<P>(
   factory: () => P,
   deps: any[],
-  tag = HOOK_TAG.useMemo
+  tag = HOOK_TAG.useMemo,
 ) {
   const hook = getMemoHook(factory, deps, tag);
   mutables?.wipFiber?.hooks?.push(hook);

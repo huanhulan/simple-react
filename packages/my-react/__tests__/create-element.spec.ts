@@ -6,7 +6,7 @@ const data = new Array<unknown>(faker.datatype.number)
   .map(() =>
     new Array<unknown>(faker.datatype.number)
       .fill(1)
-      .map(() => faker.lorem.word())
+      .map(() => faker.lorem.word()),
   );
 
 test.each(data)('Check creation of React elements', (...testData) => {
@@ -20,7 +20,7 @@ test.each(data)('Check creation of React elements', (...testData) => {
         children: [],
         nodeValue: str,
       },
-    }))
+    })),
   );
   expect(element.props.myProp).toBe(prop);
 });
@@ -38,10 +38,10 @@ test.each(data)(
           children: [],
           nodeValue: str,
         },
-      }))
+      })),
     );
     expect(element.props.myProp).toBe(prop);
-  }
+  },
 );
 
 test('Check createElement can be nested', () => {
@@ -50,7 +50,7 @@ test('Check createElement can be nested', () => {
   const element = createElement(
     'p',
     { myProp: prop },
-    createElement('p', { myAnotherProp: anotherProp })
+    createElement('p', { myAnotherProp: anotherProp }),
   );
 
   expect(element.props.children).toEqual([

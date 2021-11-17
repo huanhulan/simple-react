@@ -9,18 +9,18 @@ test('Check rendering with a CSS class', () => {
     createElement('button', {
       onClick,
     }),
-    container
+    container,
   );
 
   expect(container.querySelector('button')).not.toBeNull();
   fireEvent(
     container.querySelector('button') as HTMLButtonElement,
-    new MouseEvent('click')
+    new MouseEvent('click'),
   );
   expect(onClick).toHaveBeenCalled();
   fireEvent(
     container.querySelector('button') as HTMLButtonElement,
-    new MouseEvent('click')
+    new MouseEvent('click'),
   );
   expect(onClick).toHaveBeenCalledTimes(2);
 });

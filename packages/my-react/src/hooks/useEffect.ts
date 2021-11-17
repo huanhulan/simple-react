@@ -7,7 +7,7 @@ import { hasDepsChanged } from './hasDepsChanged';
 export function cancelEffects(fiber: Fiber) {
   fiber?.hooks
     ?.filter(
-      (hook) => hook.tag === HOOK_TAG.useEffect && (hook as EffectHook).cancel
+      (hook) => hook.tag === HOOK_TAG.useEffect && (hook as EffectHook).cancel,
     )
     .forEach((effectHook) => {
       if (
@@ -23,7 +23,7 @@ export function cancelEffects(fiber: Fiber) {
 export function runEffects(fiber: Fiber) {
   fiber?.hooks
     ?.filter(
-      (hook) => hook.tag === HOOK_TAG.useEffect && (hook as EffectHook).effect
+      (hook) => hook.tag === HOOK_TAG.useEffect && (hook as EffectHook).effect,
     )
     .forEach((effectHook) => {
       (effectHook as EffectHook).cancel = (
@@ -42,7 +42,7 @@ export function useEffect(effect: () => any, deps?: any[]) {
   }
   const hasChanged = hasDepsChanged(
     oldHook ? (oldHook as EffectHook).deps : undefined,
-    deps
+    deps,
   );
 
   const hook: EffectHook = oldHook

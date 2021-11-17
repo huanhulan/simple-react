@@ -10,7 +10,7 @@ test('Check rendering of a functional component with a prop', () => {
 
   render(
     createElement(Greeting as FunctionComponent, { name: 'NDC' }),
-    container
+    container,
   );
 
   expect(container.querySelector('p')).not.toBeNull();

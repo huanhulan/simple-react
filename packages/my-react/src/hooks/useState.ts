@@ -1,7 +1,8 @@
 import { is } from 'ramda';
+
 import { mutables, rerender, reset } from '../mutables';
-import { HOOK_TAG } from './hookTags';
 import { getHookState } from './getHookState';
+import { HOOK_TAG } from './hookTags';
 
 /**
  * When MyReact receives a new update during the render phase,
@@ -9,7 +10,7 @@ import { getHookState } from './getHookState';
  * React tags each update with an expiration timestamp and uses it to decide which update has a higher priority.
  */
 export function useState<P>(
-  initialState: P
+  initialState: P,
 ): [P, (action: P | ((p: P) => P)) => void] {
   const tag = HOOK_TAG.useState;
   const oldHook = getHookState() as StateHook<P>;
@@ -35,11 +36,6 @@ export function useState<P>(
     hook.queue.push(action);
     if (hookOwner) {
       hookOwner.dirty = true;
-      let tmp = hookOwner.parent;
-      while (tmp) {
-        tmp.dirty = true;
-        tmp = tmp.parent;
-      }
     }
     // restart diff from top of the tree
     mutables.wipRoot = mutables.currentRoot;

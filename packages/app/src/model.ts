@@ -46,7 +46,7 @@ export class TodoModel {
 
   toggle(todoToToggle: Todo) {
     this.todos = this.todos.map((todo) =>
-      todo !== todoToToggle ? todo : { ...todo, completed: !todo.completed }
+      todo !== todoToToggle ? todo : { ...todo, completed: !todo.completed },
     );
     this.inform();
   }
@@ -58,7 +58,7 @@ export class TodoModel {
 
   save(todoToSave: Todo, title: string) {
     this.todos = this.todos.map((todo) =>
-      todo !== todoToSave ? todo : { ...todo, title }
+      todo !== todoToSave ? todo : { ...todo, title },
     );
     this.inform();
   }

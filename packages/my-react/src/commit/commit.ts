@@ -46,7 +46,7 @@ function commitDeletion(fiber: Fiber, container: Node) {
     return;
   }
   mutables.deletions = mutables.deletions.filter(
-    (fiberToDelete) => fiberToDelete !== fiber
+    (fiberToDelete) => fiberToDelete !== fiber,
   );
 
   getChildFibers(fiber).forEach((fib) => commitDeletion(fib, container));
@@ -65,7 +65,7 @@ export function createDom(fiber: Fiber): Node {
     {
       children: [],
     },
-    fiber.props
+    fiber.props,
   );
   return dom;
 }
@@ -105,12 +105,12 @@ export function commitWork(fiber?: Fiber) {
       if (
         childrenFibersWithDom.indexOf(fiber) !==
         Array.from((domParent as HTMLElement).children).indexOf(
-          fiber.dom as HTMLElement
+          fiber.dom as HTMLElement,
         )
       ) {
         enqueueMove(
           parentFiberWithDom,
-          childrenFibersWithDom.map(({ dom }) => dom) as Node[]
+          childrenFibersWithDom.map(({ dom }) => dom) as Node[],
         );
       }
       if (fiber.ref) {

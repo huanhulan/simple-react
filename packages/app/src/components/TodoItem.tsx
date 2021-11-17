@@ -1,12 +1,13 @@
 /** @jsx createElement */
 import {
   createElement,
-  useState,
-  useEventCallback,
   FunctionComponent,
+  useEventCallback,
+  useState,
 } from 'my-react';
-import { TodoItemProps } from './interface';
+
 import { Input } from './Input';
+import { TodoItemProps } from './interface';
 
 const ESCAPE_KEY = 'ESCAPE';
 const ENTER_KEY = 'ENTER';
@@ -74,7 +75,7 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
   });
 
   const handleLabelClick = useEventCallback((e: MouseEvent) =>
-    e.preventDefault()
+    e.preventDefault(),
   );
 
   return (

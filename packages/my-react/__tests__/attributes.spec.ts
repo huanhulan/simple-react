@@ -10,11 +10,11 @@ test('Check rendering with a CSS class', () => {
     createElement('input', {
       value,
     }),
-    container
+    container,
   );
 
   expect(container.querySelector('input')).not.toBeNull();
   expect((container.querySelector('input') as HTMLInputElement).value).toBe(
-    value
+    value,
   );
 });

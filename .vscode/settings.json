@@ -1,4 +1,5 @@
 {
+  "editor.formatOnSave": false,
   "eslint.format.enable": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
@@ -13,5 +14,7 @@
       "directory": "packages/my-react",
       "changeProcessCWD": true
     }
-  ]
+  ],
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "tsImportSorter.configuration.autoFormat": "off"
 }

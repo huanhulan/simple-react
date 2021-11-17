@@ -22,17 +22,17 @@ function Excel({
   const onChange1 = useEventCallback(
     (e: InputEvent & { target: HTMLInputElement }) => {
       setC1(Number(e.target.value || 0));
-    }
+    },
   );
   const onChange2 = useEventCallback(
     (e: InputEvent & { target: HTMLInputElement }) => {
       setC2(Number(e.target.value || 0));
-    }
+    },
   );
   const onChange3 = useEventCallback(
     (e: InputEvent & { target: HTMLInputElement }) => {
       setC3(Number(e.target.value || 0));
-    }
+    },
   );
   useEffect(() => {
     onComputedChange(c1 + c2);
@@ -64,7 +64,7 @@ function Excel({
       type: 'number',
     }),
     createElement('p', { id: 'computed-1' }, computed1),
-    createElement('p', { id: 'computed-2' }, computed2)
+    createElement('p', { id: 'computed-2' }, computed2),
   );
 }
 const container = getExampleDOM();
@@ -78,17 +78,17 @@ describe('Check state updates can work for computed values', () => {
         onComputedChange,
         onRelease,
       }),
-      container
+      container,
     );
   });
   test('Should render the component correctly', () => {
     expect(container.querySelector('#cell1')).not.toBeNull();
     expect(container.querySelector('#cell2')).not.toBeNull();
     expect((container.querySelector('#cell1') as HTMLInputElement).value).toBe(
-      '1'
+      '1',
     );
     expect((container.querySelector('#cell2') as HTMLInputElement).value).toBe(
-      '2'
+      '2',
     );
     expect(container.querySelector('#computed-1')).toContainHTML('3');
     expect(container.querySelector('#computed-2')).toContainHTML('6');

@@ -24,7 +24,7 @@ describe('Cross-site scripting attack testing', () => {
       createElement(XSSTest as FunctionComponent, {
         str: '<script>alert(123)</script>',
       }),
-      container
+      container,
     );
     expect(global.alert).not.toHaveBeenCalled();
   });
@@ -33,7 +33,7 @@ describe('Cross-site scripting attack testing', () => {
       createElement(XSSTest as FunctionComponent, {
         str: '<scr<script>ipt>alert(document.cookie)</script>',
       }),
-      container
+      container,
     );
     expect(global.alert).not.toHaveBeenCalled();
   });
@@ -45,17 +45,17 @@ describe('Cross-site scripting attack testing', () => {
         createElement(XSSTest as FunctionComponent, {
           str,
         }),
-        container
+        container,
       );
       expect(container.querySelector('#str')).toHaveTextContent(str);
-    }
+    },
   );
   test('input tag shall not be insert', () => {
     render(
       createElement(XSSTest as FunctionComponent, {
         str: '<input type="text" name="state" value="INPUT_FROM_USER">',
       }),
-      container
+      container,
     );
     expect(container.querySelector('#str')?.querySelector('input')).toBeNull();
   });

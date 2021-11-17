@@ -14,15 +14,15 @@ test('Check rendering with a CSS class', () => {
       {
         className,
       },
-      [content]
+      [content],
     ),
-    container
+    container,
   );
 
   expect(container.querySelector(`.${className}`)).not.toBeNull();
   expect(
     getNodeText(
-      container.querySelector(`.${className}`) as HTMLParagraphElement
-    )
+      container.querySelector(`.${className}`) as HTMLParagraphElement,
+    ),
   ).toBe(content);
 });
