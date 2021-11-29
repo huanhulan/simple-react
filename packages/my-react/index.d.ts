@@ -17,7 +17,7 @@ declare type ComponentChildren = import('./typings/types').ComponentChildren;
 
 declare type RenderableProps<
   P,
-  RefType = any
+  RefType = any,
 > = import('./typings/types').RenderableProps<P, RefType>;
 
 declare type Attributes = import('./typings/types').Attributes;
@@ -30,9 +30,13 @@ declare type Ref<T> = import('./typings/types').Ref<T>;
 
 declare type StateHook<P> = import('./typings/types').StateHook<P>;
 
+declare type ContextHook<P> = import('./typings/types').ContextHook<P>;
+
 declare type MemoHook<P> = import('./typings/types').MemoHook<P>;
 
 declare type EffectHook = import('./typings/types').EffectHook;
 
 declare type Fiber<P = MyReactElement['props']> =
   import('./typings/types').Fiber<P>;
+
+declare type Context<T> = import('./typings/types').Context<T>;

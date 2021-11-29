@@ -5,6 +5,7 @@ import { EFFECT_TAG } from './constants';
 import { isFunctionComponent } from './isFunctionComponent';
 import { enqueueDelete, getChildFibers, swap } from './libs';
 import { mutables } from './mutables';
+import { createTextElement } from './createElement';
 
 function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   const keysA = Object.keys(a);
@@ -68,6 +69,11 @@ function reconcileChildren(
       }),
       ...((element as MyReactElement).props.key && {
         key: (element as MyReactElement).props.key,
+      }),
+      ...(wipFiber.context && {
+        context: {
+          ...wipFiber.context,
+        },
       }),
     }));
 
@@ -338,6 +344,14 @@ function updateFunctionComponent(fiber: Fiber) {
   } else {
     fiber.hooks = [];
     res = (fiber.type as FunctionComponent)(fiber.props);
+    if (
+      res &&
+      (typeof res === 'number' ||
+        typeof res === 'string' ||
+        typeof res === 'boolean')
+    ) {
+      res = createTextElement(res);
+    }
   }
 
   if (!res) {

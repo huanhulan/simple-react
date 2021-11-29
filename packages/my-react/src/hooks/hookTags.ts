@@ -1,7 +1,8 @@
 export const enum HOOK_TAG {
-  useEffect = 'effect',
-  useState = 'state',
-  useMemo = 'memo',
   useCallback = 'callback',
+  useContext = 'context',
+  useEffect = 'effect',
+  useMemo = 'memo',
   useRef = 'ref',
+  useState = 'state',
 }

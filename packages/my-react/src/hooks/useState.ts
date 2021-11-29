@@ -37,9 +37,11 @@ export function useState<P>(
     if (hookOwner) {
       hookOwner.dirty = true;
     }
-    // restart diff from top of the tree
-    mutables.wipRoot = mutables.currentRoot;
-    (mutables.currentRoot as Fiber).alternate = mutables.currentRoot;
+    if (mutables.currentRoot) {
+      // restart diff from top of the tree
+      mutables.wipRoot = mutables.currentRoot;
+      mutables.currentRoot.alternate = mutables.currentRoot;
+    }
     mutables.nextUnitOfWork = mutables.wipRoot;
     reset(['wipRoot', 'currentRoot', 'nextUnitOfWork']);
 

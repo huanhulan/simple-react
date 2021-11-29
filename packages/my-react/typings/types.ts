@@ -26,6 +26,9 @@ export interface FunctionComponent<P = Record<string, unknown>> {
   (props: RenderableProps<P>, ref?: Ref<any>): MyReactElement<Record<string, any>> | null;
   displayName?: string;
   defaultProps?: Partial<P>;
+  // eslint-disable-next-line no-use-before-define
+  contextType?: Context<any>;
+  type?: string;
 }
 
 export type RenderableProps<P, RefType = any> = P &
@@ -45,6 +48,11 @@ type Effects = 'PLACEMENT' | 'UPDATE' | 'DELETION';
 
 export interface IHook {
   tag: string;
+}
+
+export interface ContextHook<T> extends IHook {
+  // eslint-disable-next-line no-use-before-define
+  context: Context<T>;
 }
 
 export interface StateHook<P> extends IHook {
@@ -79,4 +87,25 @@ export type Fiber<P = MyReactElement['props']> = {
   hooks?: IHook[];
   ref?: Ref<any> | null;
   dirty?: boolean;
+  // eslint-disable-next-line no-use-before-define
+  context?: Record<string, ContextFiber<any>>;
+};
+
+type ContextFiber<T> = Fiber<{ value: T }>;
+
+export type Context<T> = {
+  Consumer: FunctionComponent<{
+    children: [
+      {
+        type: 'TEXT_ELEMENT';
+        props: {
+          children: [];
+          nodeValue: (value: T) => MyReactElement<any>;
+        };
+      },
+    ];
+  }>;
+  Provider: (props: RenderableProps<{ value: T }>) => ComponentChildren;
+  defaultValue: T;
+  id: string;
 };
