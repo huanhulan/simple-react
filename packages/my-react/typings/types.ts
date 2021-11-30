@@ -105,7 +105,7 @@ export type Context<T> = {
       },
     ];
   }>;
-  Provider: (props: RenderableProps<{ value: T }>) => ComponentChildren;
+  Provider: FunctionComponent<{ value: T }>;
   defaultValue: T;
   id: string;
 };

@@ -1,4 +1,4 @@
-import { isNil } from 'ramda';
+import { isNil, is } from 'ramda';
 import { TEXT_ELEMENT } from './constants';
 
 export function createTextElement(text: TextChild): MyReactElement {
@@ -19,13 +19,19 @@ export function createElement(
   return {
     type,
     props: {
-      ...props,
-      children: children
-        .flat()
-        .filter((child) => !(isNil(child) || child === false))
-        .map((child) => {
-          return typeof child === 'object' ? child : createTextElement(child);
-        }),
+      ...{
+        ...(is(Function, type) &&
+        (type as FunctionComponent<Record<string, any>>).defaultProps
+          ? (type as FunctionComponent<Record<string, any>>).defaultProps
+          : {}),
+        ...props,
+        children: children
+          .flat()
+          .filter((child) => !(isNil(child) || child === false))
+          .map((child) => {
+            return typeof child === 'object' ? child : createTextElement(child);
+          }),
+      },
     },
     ref: props?.ref,
   };
