@@ -5,7 +5,7 @@ export const contextType = '$$my_react-context';
 
 let i = 0;
 
-export function createContext<T>(defaultValue: T): Context<T> {
+export function createContext<T>(defaultValue?: T): Context<T> {
   const id = `$$create_context-${(i += 1)}`;
 
   const context: Partial<Context<T>> = {

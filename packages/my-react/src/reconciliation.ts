@@ -58,9 +58,9 @@ function reconcileChildren(
 ) {
   const os = getChildFibers(wipFiber?.alternate as Fiber);
   const ns: Partial<Fiber>[] = elements
-    .filter((fib) => !!fib)
+    .filter((fib: ComponentChild) => !!fib)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    .map((element: unknown) => ({
+    .map((element: ComponentChild) => ({
       type: (element as MyReactElement).type,
       props: (element as MyReactElement).props,
       parent: wipFiber,
@@ -343,7 +343,7 @@ function updateFunctionComponent(fiber: Fiber) {
     res = fiber.props.children;
   } else {
     fiber.hooks = [];
-    res = (fiber.type as FunctionComponent)(fiber.props);
+    res = (fiber.type as FunctionComponent<typeof fiber.props>)(fiber.props);
     if (
       res &&
       (typeof res === 'number' ||

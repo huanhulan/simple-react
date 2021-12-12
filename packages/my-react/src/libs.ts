@@ -33,3 +33,22 @@ export function enqueueDelete(fiber: Fiber) {
   fiber.effectTag = EFFECT_TAG.DELETION;
   mutables.deletions.push(fiber);
 }
+
+export function downToFindFibersWithDom(fiber: Fiber): Fiber[] {
+  const children = getChildFibers(fiber);
+  return children
+    .map((fib) => {
+      if (fib?.dom && !fib.isPortal) {
+        return [fib];
+      }
+      return downToFindFibersWithDom(fib);
+    })
+    .flat();
+}
+
+export function findParentFiberWithDom(fiber?: Fiber): Fiber {
+  if (!fiber?.dom) {
+    return findParentFiberWithDom(fiber?.parent);
+  }
+  return fiber;
+}

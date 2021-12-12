@@ -44,19 +44,21 @@ export function useEffect(effect: () => any, deps?: any[]) {
     oldHook ? (oldHook as EffectHook).deps : undefined,
     deps,
   );
-
+  function getHookTemplate() {
+    return {
+      tag,
+      effect: hasChanged ? effect : undefined,
+      hasChanged,
+      deps,
+    };
+  }
   const hook: EffectHook = oldHook
-    ? Object.assign(oldHook, {
-        effect: hasChanged ? effect : undefined,
-        hasChanged,
-        deps,
-      })
-    : {
-        tag,
-        effect: hasChanged ? effect : undefined,
-        hasChanged,
-        deps,
-      };
+    ? Object.assign(oldHook, getHookTemplate())
+    : getHookTemplate();
+
+  if (process.env.NODE_ENV !== 'production') {
+    (hook as Record<string, any>).fiber = mutables?.wipFiber;
+  }
 
   mutables?.wipFiber?.hooks?.push(hook);
 }

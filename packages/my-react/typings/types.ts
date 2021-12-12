@@ -89,6 +89,7 @@ export type Fiber<P = MyReactElement['props']> = {
   dirty?: boolean;
   // eslint-disable-next-line no-use-before-define
   context?: Record<string, ContextFiber<any>>;
+  isPortal?: boolean;
 };
 
 type ContextFiber<T> = Fiber<{ value: T }>;
