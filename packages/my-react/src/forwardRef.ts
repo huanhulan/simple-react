@@ -9,9 +9,7 @@ export function forwardRef<P = Record<string, any>>(fn: FunctionComponent<P>) {
     delete clone['ref'];
     return fn(
       clone,
-      !ref || (typeof ref === 'object' && !('current' in ref))
-        ? undefined
-        : ref,
+      !ref || (typeof ref === 'object' && ref === null) ? undefined : ref,
     );
   }
 
