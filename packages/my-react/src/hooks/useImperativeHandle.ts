@@ -7,8 +7,13 @@ export function useImperativeHandle<T = Record<string, any>>(
 ) {
   useEffect(
     () => {
-      if (typeof ref === 'function') ref(createHandle());
-      else if (ref) ref.current = createHandle();
+      if (typeof ref === 'function') {
+        ref(createHandle());
+        return;
+      }
+      if (ref) {
+        ref.current = createHandle();
+      }
     },
     Array.isArray(deps) ? [...deps, ref] : deps,
   );
