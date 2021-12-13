@@ -1,13 +1,10 @@
-import { fireEvent, waitFor } from '@testing-library/dom';
 import { getExampleDOM } from 'test-utils';
 import { requestIdleCallback } from '@shopify/jest-dom-mocks';
-import MyReact, {
+import {
   createElement,
   render,
-  useEffect,
   useRef,
   useState,
-  useEventCallback,
   useImperativeHandle,
   forwardRef,
   unmountComponentAtNode,
@@ -88,7 +85,9 @@ describe('forwardRef', () => {
   it('stale ref missing with passed useRef', () => {
     let refOutter: Ref<HTMLElement> = {} as any;
     let stateSetter: (p: any) => void = () => ({});
-    const Inner = forwardRef((props, ref) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const Inner = forwardRef((__, ref) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, setState] = useState(null);
       refOutter = ref as any;
       stateSetter = setState;
@@ -120,7 +119,7 @@ describe('forwardRef', () => {
 
   it('calls ref when this is a function.', () => {
     const spy = jest.fn();
-    const Bar = forwardRef((props, ref) => {
+    const Bar = forwardRef((_, ref) => {
       useImperativeHandle(ref as any, () => ({ foo: 100 }));
       return null;
     });
