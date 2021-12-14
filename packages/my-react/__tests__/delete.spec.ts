@@ -8,7 +8,7 @@ test('Check rendering of a functional component with a prop', async () => {
   const container = getExampleDOM();
   const testData = [
     new Array(
-      faker.random.number({
+      faker.datatype.number({
         min: 1,
         max: 200,
       }),

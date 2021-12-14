@@ -41,10 +41,12 @@ export function useState<P>(
       // restart diff from top of the tree
       mutables.wipRoot = mutables.currentRoot;
       mutables.currentRoot.alternate = mutables.currentRoot;
-    }
-    mutables.nextUnitOfWork = mutables.wipRoot;
-    reset(['wipRoot', 'currentRoot', 'nextUnitOfWork']);
+      reset(['wipRoot', 'currentRoot', 'nextUnitOfWork']);
 
+      mutables.nextUnitOfWork = mutables.wipRoot;
+    } else {
+      (mutables.wipRoot as Fiber).alternate = mutables.wipRoot;
+    }
     rerender();
   };
   mutables.wipFiber?.hooks?.push(hook);

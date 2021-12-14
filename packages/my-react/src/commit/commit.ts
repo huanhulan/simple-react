@@ -3,7 +3,12 @@ import { mutables, reset } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
 import { cancelEffects, runEffects } from '../hooks';
-import { getChildFibers, enqueueMove } from '../libs';
+import {
+  getChildFibers,
+  enqueueMove,
+  downToFindFibersWithDom,
+  findParentFiberWithDom,
+} from '../libs';
 
 function applyRef<T>(ref: Ref<T>, value: T) {
   if (typeof ref === 'function') {
@@ -13,43 +18,39 @@ function applyRef<T>(ref: Ref<T>, value: T) {
   ref.current = value;
 }
 
-function downToFindFibersWithDom(fiber: Fiber): Fiber[] {
-  const children = getChildFibers(fiber);
-  return children
-    .map((fib) => {
-      if (fib?.dom) {
-        return [fib];
-      }
-      return downToFindFibersWithDom(fib);
-    })
-    .flat();
-}
-
 function sortDom([fiber, childrenNodes]: [Fiber, Node[]]) {
   const { dom: parentDom } = fiber;
   childrenNodes.forEach((node) => parentDom?.appendChild(node as HTMLElement));
 }
 
-function commitDeletion(fiber: Fiber, container: Node) {
+function commitDeletion(fiber: Fiber, containerDOM: Node) {
   if (fiber.ref) {
     applyRef(fiber.ref, null);
   }
 
   if (
+    !fiber.isPortal &&
     fiber.dom &&
-    Array.from(container.childNodes).includes(fiber.dom as any)
+    Array.from(containerDOM.childNodes).includes(fiber.dom as any)
   ) {
     fiber.dom?.parentElement?.removeChild(fiber.dom);
   }
   cancelEffects(fiber);
-  if (!fiber.child) {
-    return;
-  }
+
   mutables.deletions = mutables.deletions.filter(
     (fiberToDelete) => fiberToDelete !== fiber,
   );
 
-  getChildFibers(fiber).forEach((fib) => commitDeletion(fib, container));
+  if (!fiber.child) {
+    return;
+  }
+
+  getChildFibers(fiber).forEach((fib) =>
+    commitDeletion(
+      fib,
+      fiber.isPortal ? (fiber.dom as HTMLElement) : containerDOM,
+    ),
+  );
 }
 
 export function createDom(fiber: Fiber): Node {
@@ -60,6 +61,9 @@ export function createDom(fiber: Fiber): Node {
     fiber.type === TEXT_ELEMENT
       ? document.createTextNode('')
       : document.createElement(fiber.type as string);
+  if (process.env.NODE_ENV !== 'production') {
+    dom['$$my_react-fiber'] = fiber;
+  }
   updateDom(
     dom,
     {
@@ -70,15 +74,18 @@ export function createDom(fiber: Fiber): Node {
   return dom;
 }
 
-function findFiberWithDom(fiber?: Fiber): Fiber {
-  if (!fiber?.dom) {
-    return findFiberWithDom(fiber?.parent);
-  }
-  return fiber;
-}
-
 // Fibers that are not dom elements who need to wait for all its children tree to be created to run effects
 let waitForChildrenFibers: Fiber[] = [];
+
+function runPendingEffectsSync(fiber: Fiber) {
+  if (waitForChildrenFibers.includes(fiber)) {
+    if (fiber.effectTag === EFFECT_TAG.UPDATE) {
+      cancelEffects(fiber);
+    }
+    runEffects(fiber);
+    waitForChildrenFibers = waitForChildrenFibers.filter((f) => f !== fiber);
+  }
+}
 
 /**
  * We are also walking the whole tree in the commit phase.
@@ -89,7 +96,7 @@ export function commitWork(fiber?: Fiber) {
     return;
   }
 
-  const parentFiberWithDom = findFiberWithDom(fiber.parent);
+  const parentFiberWithDom = findParentFiberWithDom(fiber.parent);
   const childrenFibersWithDom = downToFindFibersWithDom(parentFiberWithDom);
   const { dom: domParent } = parentFiberWithDom;
 
@@ -99,7 +106,7 @@ export function commitWork(fiber?: Fiber) {
   }
 
   if (fiber.effectTag === EFFECT_TAG.PLACEMENT) {
-    if (!isNil(fiber.dom)) {
+    if (!isNil(fiber.dom) && !fiber.isPortal) {
       domParent.appendChild(fiber.dom);
 
       if (
@@ -122,7 +129,9 @@ export function commitWork(fiber?: Fiber) {
       waitForChildrenFibers.push(fiber);
     }
   } else if (fiber.effectTag === EFFECT_TAG.UPDATE) {
-    if (!isNil(fiber.dom)) {
+    if (is(Function, fiber.type)) {
+      waitForChildrenFibers.push(fiber);
+    } else if (!isNil(fiber.dom)) {
       cancelEffects(fiber);
       updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
       if (fiber.ref) {
@@ -130,26 +139,17 @@ export function commitWork(fiber?: Fiber) {
       }
       runEffects(fiber);
     }
-    if (is(Function, fiber.type)) {
-      waitForChildrenFibers.push(fiber);
-    }
   } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
     if (fiber.ref) {
       applyRef(fiber.ref, null);
     }
-    cancelEffects(fiber);
     commitDeletion(fiber, domParent);
     return;
   }
 
+  // DFS
   commitWork(fiber.child);
-  if (waitForChildrenFibers.includes(fiber)) {
-    if (fiber.effectTag === EFFECT_TAG.UPDATE) {
-      cancelEffects(fiber);
-    }
-    runEffects(fiber);
-    waitForChildrenFibers = waitForChildrenFibers.filter((f) => f !== fiber);
-  }
+  runPendingEffectsSync(fiber);
   commitWork(fiber.sibling);
 }
 

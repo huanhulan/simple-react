@@ -58,9 +58,10 @@ function reconcileChildren(
 ) {
   const os = getChildFibers(wipFiber?.alternate as Fiber);
   const ns: Partial<Fiber>[] = elements
-    .filter((fib) => !!fib)
+    .flat()
+    .filter((fib: ComponentChild) => !!fib)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    .map((element: unknown) => ({
+    .map((element: ComponentChild) => ({
       type: (element as MyReactElement).type,
       props: (element as MyReactElement).props,
       parent: wipFiber,
@@ -69,11 +70,6 @@ function reconcileChildren(
       }),
       ...((element as MyReactElement).props.key && {
         key: (element as MyReactElement).props.key,
-      }),
-      ...(wipFiber.context && {
-        context: {
-          ...wipFiber.context,
-        },
       }),
     }));
 
@@ -326,6 +322,9 @@ function reconcileChildren(
 
   // construct the traverse path of the new fiber tree
   (ns as Fiber[]).forEach((el, idx) => {
+    if (wipFiber.context) {
+      el.context = wipFiber.context;
+    }
     if (idx === 0) {
       wipFiber.child = el;
     }
@@ -340,10 +339,10 @@ function updateFunctionComponent(fiber: Fiber) {
 
   let res: ComponentChild[] | ComponentChild;
   if (isNil(fiber.effectTag)) {
-    res = fiber.props.children;
+    res = fiber?.cache?.children || fiber.props.children;
   } else {
     fiber.hooks = [];
-    res = (fiber.type as FunctionComponent)(fiber.props);
+    res = (fiber.type as FunctionComponent<typeof fiber.props>)(fiber.props);
     if (
       res &&
       (typeof res === 'number' ||
@@ -361,7 +360,11 @@ function updateFunctionComponent(fiber: Fiber) {
   const children = Array.isArray(res) ? res : [res];
   // remember the normalized result in case of fiber reusing
   if (!isNil(fiber.effectTag)) {
-    fiber.props.children = children;
+    if (!fiber.cache) {
+      fiber.cache = {
+        children,
+      };
+    }
   }
 
   reconcileChildren(fiber, children);
