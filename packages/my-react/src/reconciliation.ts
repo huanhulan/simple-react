@@ -71,11 +71,6 @@ function reconcileChildren(
       ...((element as MyReactElement).props.key && {
         key: (element as MyReactElement).props.key,
       }),
-      ...(wipFiber.context && {
-        context: {
-          ...wipFiber.context,
-        },
-      }),
     }));
 
   // head pointers
@@ -327,6 +322,9 @@ function reconcileChildren(
 
   // construct the traverse path of the new fiber tree
   (ns as Fiber[]).forEach((el, idx) => {
+    if (wipFiber.context) {
+      el.context = wipFiber.context;
+    }
     if (idx === 0) {
       wipFiber.child = el;
     }
