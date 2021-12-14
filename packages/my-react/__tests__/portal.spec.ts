@@ -8,7 +8,7 @@ import MyReact, {
   useRef,
   useState,
   useEventCallback,
-  // useContext,
+  useContext,
   unmountComponentAtNode,
 } from '../index';
 
@@ -27,7 +27,7 @@ describe('Portal', () => {
     unmountComponentAtNode(portalAppRoot);
   });
 
-  test('should render into a different root node', () => {
+  test('should render into a different root node, and unmounting the app should also unmount the content within the portal', () => {
     const root = document.createElement('div');
     document.body.appendChild(root);
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -212,176 +212,250 @@ describe('Portal', () => {
     );
   });
 
-  // test('Portal with context', () => {
-  //   const Context = MyReact.createContext<HTMLElement>();
-  //   const ContainerStyle = {
-  //     position: 'relative',
-  //     'z-index': 0,
-  //   };
-  //   const OverlayStyle = {
-  //     position: 'absolute',
-  //     top: 0,
-  //     left: 0,
-  //     width: '100vw',
-  //     height: '100vh',
-  //     background: 'rgba(0, 0, 0, 0.3)',
-  //   };
-  //   const DialogStyle = {
-  //     background: 'white',
-  //     'border-radius': '5px',
-  //     padding: '20px',
-  //     position: 'absolute',
-  //     top: '50%',
-  //     left: '50%',
-  //     transform: 'translate(-50%, -50%)',
-  //     'z-index': 1,
-  //   };
-  //   const ModalStyle = { width: 400, textAlign: 'center' };
+  test('Should work with context, and should support native browser event bubbling', async () => {
+    const Context = MyReact.createContext<HTMLElement>();
+    const ContainerStyle = {
+      position: 'relative',
+      'z-index': 0,
+    };
+    const OverlayStyle = {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      background: 'rgba(0, 0, 0, 0.3)',
+    };
+    const DialogStyle = {
+      background: 'white',
+      'border-radius': '5px',
+      padding: '20px',
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      'z-index': 1,
+    };
+    const ModalStyle = { width: 400, textAlign: 'center' };
 
-  //   // eslint-disable-next-line @typescript-eslint/ban-types
-  //   const ModalProvider: FunctionComponent<{}> = ({ children }) => {
-  //     const modalRef = useRef<HTMLElement>(null);
-  //     const [context, setContext] = useState<HTMLElement | null>(null);
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const ModalProvider: FunctionComponent<{}> = ({ children }) => {
+      const modalRef = useRef<HTMLElement>(null);
+      const [context, setContext] = useState<HTMLElement | null>(null);
 
-  //     // make sure re-render is triggered after initial
-  //     // render so that modalRef exists
-  //     useEffect(() => {
-  //       setContext(modalRef.current as HTMLElement);
-  //     }, []);
+      // make sure re-render is triggered after initial
+      // render so that modalRef exists
+      useEffect(() => {
+        setContext(modalRef.current as HTMLElement);
+      }, []);
 
-  //     return createElement('div', { style: ContainerStyle }, [
-  //       createElement(
-  //         Context.Provider as any,
-  //         { value: context },
-  //         children as ComponentChildren,
-  //       ),
-  //       createElement('div', { ref: modalRef }, []),
-  //     ]);
-  //   };
+      return createElement('div', { style: ContainerStyle }, [
+        createElement(
+          Context.Provider as any,
+          { value: context },
+          children as ComponentChildren,
+        ),
+        createElement('div', { ref: modalRef }, []),
+      ]);
+    };
 
-  //   const Modal: FunctionComponent<{
-  //     onClose: () => void;
-  //   }> = ({ onClose, children, ...props }) => {
-  //     const modalNode = useContext(Context);
-  //     return modalNode
-  //       ? MyReact.createPortal(
-  //           createElement(
-  //             'div',
-  //             {
-  //               style: OverlayStyle,
-  //             },
-  //             [
-  //               createElement(
-  //                 'div',
-  //                 {
-  //                   ...props,
-  //                   style: DialogStyle,
-  //                 },
-  //                 [
-  //                   children as ComponentChild,
-  //                   createElement(
-  //                     'button',
-  //                     {
-  //                       onClick: onClose,
-  //                     },
-  //                     ['Close'],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ],
-  //           ),
-  //           modalNode,
-  //         )
-  //       : null;
-  //   };
+    const Modal: FunctionComponent<{
+      onClose: () => void;
+    }> = ({ onClose, children, ...props }) => {
+      const modalNode = useContext(Context);
+      return modalNode
+        ? MyReact.createPortal(
+            createElement(
+              'div',
+              {
+                id: 'overlay',
+                style: OverlayStyle,
+              },
+              [
+                createElement(
+                  'div',
+                  {
+                    ...props,
+                    style: DialogStyle,
+                  },
+                  [
+                    children as ComponentChild,
+                    createElement(
+                      'button',
+                      {
+                        onClick: onClose,
+                        id: 'modal-close-button',
+                      },
+                      ['Close'],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            modalNode,
+          )
+        : null;
+    };
 
-  //   // eslint-disable-next-line @typescript-eslint/ban-types
-  //   const Page: FunctionComponent<{}> = () => {
-  //     const [isModalOpen, setIsModalOpen] = useState(false);
-  //     const openModal = useEventCallback(() => setIsModalOpen(true));
-  //     const closeModal = useEventCallback(() => setIsModalOpen(false));
-  //     return createElement('div', {}, [
-  //       createElement(
-  //         'button',
-  //         {
-  //           onClick: openModal,
-  //         },
-  //         ['Open page modal'],
-  //       ),
-  //       isModalOpen &&
-  //         createElement(
-  //           Modal as any,
-  //           {
-  //             onClose: closeModal,
-  //             style: ModalStyle,
-  //           },
-  //           [createElement('p', {}, ['Page Modal'])],
-  //         ),
-  //     ]);
-  //   };
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const Page: FunctionComponent<{}> = () => {
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const openModal = useEventCallback(() => setIsModalOpen(true));
+      const closeModal = useEventCallback(() => setIsModalOpen(false));
+      return createElement('div', {}, [
+        createElement(
+          'button',
+          {
+            onClick: openModal,
+            id: 'page-modal-button',
+          },
+          ['Open page modal'],
+        ),
+        isModalOpen &&
+          createElement(
+            Modal as any,
+            {
+              id: 'page-modal',
+              onClose: closeModal,
+              style: ModalStyle,
+            },
+            [createElement('p', {}, ['Page Modal'])],
+          ),
+      ]);
+    };
 
-  //   // eslint-disable-next-line @typescript-eslint/ban-types
-  //   const App: FunctionComponent<{}> = () => {
-  //     const [isModalOpen, setIsModalOpen] = useState(false);
-  //     const parentSubmit = useEventCallback(
-  //       jest.fn((event: Event) => {
-  //         event.preventDefault();
-  //       }),
-  //     );
-  //     const modalSubmit = useEventCallback(
-  //       jest.fn((event: Event) => {
-  //         event.preventDefault();
-  //       }),
-  //     );
-  //     const openModal = useEventCallback(() => setIsModalOpen(true));
-  //     const closeModal = useEventCallback(() => setIsModalOpen(false));
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const App: FunctionComponent<{}> = () => {
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const parentSubmit = useEventCallback(
+        jest.fn((event: Event) => {
+          event.preventDefault();
+        }),
+      );
+      const modalSubmit = useEventCallback(
+        jest.fn((event: Event) => {
+          event.preventDefault();
+        }),
+      );
+      const openModal = useEventCallback(() => setIsModalOpen(true));
+      const closeModal = useEventCallback(() => setIsModalOpen(false));
 
-  //     return createElement(ModalProvider, {}, [
-  //       createElement(
-  //         'form',
-  //         {
-  //           onSubmit: parentSubmit,
-  //         },
-  //         [
-  //           createElement('h1', {}, ['My App']),
-  //           createElement(
-  //             'button',
-  //             {
-  //               onClick: openModal,
-  //             },
-  //             ['Open app modal'],
-  //           ),
-  //           createElement(Page, {}, []),
-  //           isModalOpen &&
-  //             createElement(
-  //               Modal as any,
-  //               {
-  //                 onClose: closeModal,
-  //               },
-  //               [
-  //                 createElement(
-  //                   'form',
-  //                   {
-  //                     onSubmit: modalSubmit,
-  //                   },
-  //                   [
-  //                     createElement('p', {}, ['App Modal']),
-  //                     createElement(
-  //                       'button',
-  //                       {
-  //                         type: 'submit',
-  //                       },
-  //                       ['Go'],
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //         ],
-  //       ),
-  //     ]);
-  //   };
+      return createElement(ModalProvider, {}, [
+        createElement(
+          'form',
+          {
+            onSubmit: parentSubmit,
+          },
+          [
+            createElement('h1', {}, ['My App']),
+            createElement(
+              'button',
+              {
+                onClick: openModal,
+                id: 'app-modal-button',
+              },
+              ['Open app modal'],
+            ),
+            createElement(Page, {}, []),
+            isModalOpen &&
+              createElement(
+                Modal as any,
+                {
+                  onClose: closeModal,
+                },
+                [
+                  createElement(
+                    'form',
+                    {
+                      onSubmit: modalSubmit,
+                    },
+                    [
+                      createElement('p', {}, ['App Modal']),
+                      createElement(
+                        'button',
+                        {
+                          id: 'submit-button',
+                          type: 'submit',
+                        },
+                        ['Go'],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ]);
+    };
 
-  //   render(createElement(App as FunctionComponent, {}), portalAppRoot);
-  // });
+    render(createElement(App as FunctionComponent, {}), portalAppRoot);
+
+    expect(portalAppRoot.querySelector('#page-modal-button')).toBeTruthy();
+    expect(portalAppRoot.querySelector('#app-modal-button')).toBeTruthy();
+
+    fireEvent(
+      portalAppRoot.querySelector('#page-modal-button') as HTMLButtonElement,
+      new MouseEvent('click'),
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await waitFor(() => {
+      expect(portalAppRoot.querySelector('#page-modal')).toBeTruthy();
+      expect(portalAppRoot.querySelector('#modal-close-button')).toBeTruthy();
+      expect(portalAppRoot.querySelector('#overlay')).toBeTruthy();
+    });
+
+    fireEvent(
+      portalAppRoot.querySelector('#modal-close-button') as HTMLButtonElement,
+      new MouseEvent('click'),
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await waitFor(() => {
+      expect(portalAppRoot.querySelector('#page-modal')).toBeFalsy();
+      expect(portalAppRoot.querySelector('#modal-close-button')).toBeFalsy();
+      expect(portalAppRoot.querySelector('#overlay')).toBeFalsy();
+    });
+
+    fireEvent(
+      portalAppRoot.querySelector('#app-modal-button') as HTMLButtonElement,
+      new MouseEvent('click'),
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await waitFor(() => {
+      expect(portalAppRoot.querySelector('#submit-button')).toBeTruthy();
+      expect(portalAppRoot.querySelector('#modal-close-button')).toBeTruthy();
+      expect(portalAppRoot.querySelector('#overlay')).toBeTruthy();
+    });
+
+    const fakeOnSubmitCB = jest.fn();
+    portalAppRoot.addEventListener('submit', fakeOnSubmitCB);
+    fireEvent(
+      portalAppRoot.querySelector('#submit-button') as HTMLButtonElement,
+      new MouseEvent('click'),
+    );
+    requestIdleCallback.runIdleCallbacks();
+    expect(fakeOnSubmitCB).toHaveBeenCalledTimes(1);
+    portalAppRoot.removeEventListener('submit', fakeOnSubmitCB);
+
+    fireEvent(
+      portalAppRoot.querySelector('#modal-close-button') as HTMLButtonElement,
+      new MouseEvent('click'),
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await waitFor(() => {
+      expect(portalAppRoot.querySelector('#page-modal')).toBeFalsy();
+      expect(portalAppRoot.querySelector('#modal-close-button')).toBeFalsy();
+      expect(portalAppRoot.querySelector('#overlay')).toBeFalsy();
+    });
+
+    fireEvent(
+      portalAppRoot.querySelector('#page-modal-button') as HTMLButtonElement,
+      new MouseEvent('click'),
+    );
+    requestIdleCallback.runIdleCallbacks();
+    await waitFor(() => {
+      expect(portalAppRoot.querySelector('#page-modal')).toBeTruthy();
+      expect(portalAppRoot.querySelector('#modal-close-button')).toBeTruthy();
+      expect(portalAppRoot.querySelector('#overlay')).toBeTruthy();
+    });
+  });
 });
