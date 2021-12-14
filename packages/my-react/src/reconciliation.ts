@@ -58,6 +58,7 @@ function reconcileChildren(
 ) {
   const os = getChildFibers(wipFiber?.alternate as Fiber);
   const ns: Partial<Fiber>[] = elements
+    .flat()
     .filter((fib: ComponentChild) => !!fib)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     .map((element: ComponentChild) => ({
@@ -340,7 +341,7 @@ function updateFunctionComponent(fiber: Fiber) {
 
   let res: ComponentChild[] | ComponentChild;
   if (isNil(fiber.effectTag)) {
-    res = fiber.props.children;
+    res = fiber?.cache?.children || fiber.props.children;
   } else {
     fiber.hooks = [];
     res = (fiber.type as FunctionComponent<typeof fiber.props>)(fiber.props);
@@ -361,7 +362,11 @@ function updateFunctionComponent(fiber: Fiber) {
   const children = Array.isArray(res) ? res : [res];
   // remember the normalized result in case of fiber reusing
   if (!isNil(fiber.effectTag)) {
-    fiber.props.children = children;
+    if (!fiber.cache) {
+      fiber.cache = {
+        children,
+      };
+    }
   }
 
   reconcileChildren(fiber, children);

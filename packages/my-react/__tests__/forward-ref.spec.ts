@@ -43,7 +43,7 @@ describe('forwardRef', () => {
     });
   });
 
-  it('calls ref when this is a function', () => {
+  test('calls ref when this is a function', () => {
     const spy = jest.fn();
     const Bar = forwardRef((_, ref) => {
       useImperativeHandle(ref as any, () => ({ foo: 100 }));
@@ -59,7 +59,7 @@ describe('forwardRef', () => {
     });
   });
 
-  it('should pass undefined as ref when no ref is present', () => {
+  test('should pass undefined as ref when no ref is present', () => {
     let actual;
     const App = forwardRef((_, ref) => {
       actual = ref;
@@ -70,7 +70,7 @@ describe('forwardRef', () => {
     expect(actual).toBeFalsy();
   });
 
-  it('should not crash when explicitly passing null', () => {
+  test('should not crash when explicitly passing null', () => {
     let actual;
     const App = forwardRef((_, ref) => {
       actual = ref;
@@ -82,7 +82,8 @@ describe('forwardRef', () => {
     expect(actual).toBeFalsy();
   });
 
-  it('stale ref missing with passed useRef', () => {
+  // TODO
+  test('stale ref missing with passed useRef', () => {
     let refOutter: Ref<HTMLElement> = {} as any;
     let stateSetter: (p: any) => void = () => ({});
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -117,7 +118,7 @@ describe('forwardRef', () => {
     );
   });
 
-  it('calls ref when this is a function.', () => {
+  test('calls ref when this is a function.', () => {
     const spy = jest.fn();
     const Bar = forwardRef((_, ref) => {
       useImperativeHandle(ref as any, () => ({ foo: 100 }));

@@ -90,6 +90,9 @@ export type Fiber<P = MyReactElement['props']> = {
   // eslint-disable-next-line no-use-before-define
   context?: Record<string, ContextFiber<any>>;
   isPortal?: boolean;
+  cache?: {
+    children: MyReactElement['props']['children'];
+  };
 };
 
 type ContextFiber<T> = Fiber<{ value: T }>;

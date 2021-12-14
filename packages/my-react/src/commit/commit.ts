@@ -129,16 +129,15 @@ export function commitWork(fiber?: Fiber) {
       waitForChildrenFibers.push(fiber);
     }
   } else if (fiber.effectTag === EFFECT_TAG.UPDATE) {
-    if (!isNil(fiber.dom)) {
+    if (is(Function, fiber.type)) {
+      waitForChildrenFibers.push(fiber);
+    } else if (!isNil(fiber.dom)) {
       cancelEffects(fiber);
       updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
       if (fiber.ref) {
         applyRef(fiber.ref, fiber.dom);
       }
       runEffects(fiber);
-    }
-    if (is(Function, fiber.type)) {
-      waitForChildrenFibers.push(fiber);
     }
   } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
     if (fiber.ref) {

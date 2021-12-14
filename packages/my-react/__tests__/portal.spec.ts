@@ -175,6 +175,43 @@ describe('Portal', () => {
     expect(portalAppRoot.innerHTML).toBeFalsy();
   });
 
+  test('should work with changing the container', () => {
+    let set: ReturnType<typeof useState>[1] = () => undefined;
+    let ref: Ref<(r: any) => void>;
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const Foo: FunctionComponent<{}> = ({ children }) => {
+      const [portalRoot, setContainer] = useState(portalAppRoot);
+      set = setContainer as any;
+
+      return createElement(
+        'div',
+        {
+          ref: (r: any) => {
+            ref = r;
+          },
+        },
+        [
+          createElement('p', {}, 'Hello'),
+          MyReact.createPortal(children as any, portalRoot),
+        ],
+      );
+    };
+    render(
+      createElement(Foo, {}, [createElement('div', {}, 'foobar')]),
+      portalAppRoot,
+    );
+    expect(portalAppRoot.innerHTML).toBe(
+      '<div><p>Hello</p></div><div>foobar</div>',
+    );
+    requestIdleCallback.runIdleCallbacks();
+    set(() => ref);
+    requestIdleCallback.runIdleCallbacks();
+    expect(portalAppRoot.innerHTML).toBe(
+      '<div><p>Hello</p><div>foobar</div></div>',
+    );
+  });
+
   // test('Portal with context', () => {
   //   const Context = MyReact.createContext<HTMLElement>();
   //   const ContainerStyle = {
