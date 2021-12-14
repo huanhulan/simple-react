@@ -2,6 +2,7 @@ import { cloneElement } from './src/cloneElement';
 import { createContext } from './src/createContext';
 import { createElement } from './src/MyReact';
 import { createPortal } from './src/portal';
+import { createRef } from './src/createRef';
 
 export * from './typings/types';
 
@@ -10,6 +11,7 @@ const MyReact = {
   createContext,
   createElement,
   createPortal,
+  createRef,
 };
 
 export default MyReact;
