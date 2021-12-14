@@ -1,5 +1,5 @@
 import { isNil } from 'ramda';
-import { mutables, reset } from './mutables';
+import { mutables, reset, pendingFibers } from './mutables';
 import { workLoop } from './concurrency';
 
 function mount(reactElm: MyReactElement, node: HTMLElement) {
@@ -13,7 +13,7 @@ function mount(reactElm: MyReactElement, node: HTMLElement) {
     },
     alternate: mutables.currentRoot,
   };
-  mutables.nextUnitOfWork = mutables.wipRoot;
+  pendingFibers.enqueue(mutables.wipRoot, true);
 }
 
 /**
@@ -54,8 +54,7 @@ export function unmountComponentAtNode(node: HTMLElement) {
     },
     alternate: mutables.currentRoot,
   };
-  mutables.nextUnitOfWork = mutables.wipRoot;
-  workLoop(true);
+  pendingFibers.enqueue(mutables.wipRoot, true);
 
   reset();
   return true;

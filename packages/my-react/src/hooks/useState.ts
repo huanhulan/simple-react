@@ -1,6 +1,6 @@
 import { is } from 'ramda';
 
-import { mutables, rerender, reset } from '../mutables';
+import { mutables, pendingFibers } from '../mutables';
 import { getHookState } from './getHookState';
 import { HOOK_TAG } from './hookTags';
 
@@ -41,13 +41,10 @@ export function useState<P>(
       // restart diff from top of the tree
       mutables.wipRoot = mutables.currentRoot;
       mutables.currentRoot.alternate = mutables.currentRoot;
-      reset(['wipRoot', 'currentRoot', 'nextUnitOfWork']);
-
-      mutables.nextUnitOfWork = mutables.wipRoot;
     } else {
       (mutables.wipRoot as Fiber).alternate = mutables.wipRoot;
     }
-    rerender();
+    pendingFibers.enqueue(mutables.wipRoot as Fiber);
   };
   mutables.wipFiber?.hooks?.push(hook);
 
