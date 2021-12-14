@@ -7,7 +7,7 @@ export const evt = 'rerender';
 export const onRerender: (cb: () => void) => void = curry(emitter.on)(
   evt as any,
 );
-export const rerender = () => emitter.emit(evt);
+export const rerender = (sync?: boolean) => emitter.emit(evt, sync);
 
 export const getInitialValue = () =>
   ({
@@ -30,6 +30,33 @@ export const getInitialValue = () =>
   });
 
 export const mutables = getInitialValue();
+
+class PendingFibers {
+  private queue: Fiber[] = [];
+
+  enqueue(fiber: Fiber, shouldRenderImmediately = false) {
+    if (!this.queue.includes(fiber)) {
+      this.queue.push(fiber);
+    }
+    rerender(shouldRenderImmediately);
+  }
+
+  hasPendingFibers() {
+    return !!this.queue.length;
+  }
+
+  get head(): Fiber<any> {
+    return this.queue[0];
+  }
+
+  consume() {
+    const res = this.head;
+    this.queue.shift();
+    return res;
+  }
+}
+
+export const pendingFibers = new PendingFibers();
 
 export function reset(omitKeys: string[] = []) {
   Object.assign(mutables, omit(omitKeys, getInitialValue()));
