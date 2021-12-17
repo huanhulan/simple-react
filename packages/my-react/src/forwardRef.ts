@@ -1,3 +1,5 @@
+import { isNil } from 'ramda';
+
 export function forwardRef<P = Record<string, any>>(fn: FunctionComponent<P>) {
   function Forwarded(
     props: P,
@@ -7,10 +9,8 @@ export function forwardRef<P = Record<string, any>>(fn: FunctionComponent<P>) {
     const clone = { ...props };
     // eslint-disable-next-line
     delete clone['ref'];
-    return fn(
-      clone,
-      !ref || (typeof ref === 'object' && ref === null) ? undefined : ref,
-    );
+    // react sets default to null
+    return fn(clone, isNil(ref) ? null : ref);
   }
 
   return Forwarded;

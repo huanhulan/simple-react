@@ -11,6 +11,9 @@ import {
 } from '../libs';
 
 function applyRef<T>(ref: Ref<T>, value: T) {
+  if (!ref) {
+    return;
+  }
   if (typeof ref === 'function') {
     ref(value);
     return;

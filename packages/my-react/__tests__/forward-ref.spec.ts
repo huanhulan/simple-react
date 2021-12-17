@@ -59,7 +59,7 @@ describe('forwardRef', () => {
     });
   });
 
-  test('should pass undefined as ref when no ref is present', () => {
+  test('should pass null as ref when no ref is present', () => {
     let actual;
     const App = forwardRef((_, ref) => {
       actual = ref;
@@ -67,7 +67,7 @@ describe('forwardRef', () => {
     });
 
     render(createElement(App, {}), container);
-    expect(actual).toBeFalsy();
+    expect(actual).toEqual(null);
   });
 
   test('should not crash when explicitly passing null', () => {
