@@ -1,4 +1,5 @@
 import { getExampleDOM } from 'test-utils';
+import { FunctionComponent } from '../typings';
 import { render, createElement } from '../index';
 
 test('Check rendering of a functional component with a prop', () => {

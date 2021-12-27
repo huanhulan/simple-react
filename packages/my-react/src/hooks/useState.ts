@@ -1,4 +1,5 @@
 import { is } from 'ramda';
+import { StateHook, Fiber } from '../../typings';
 
 import { mutables, pendingFibers } from '../mutables';
 import { getHookState } from './getHookState';

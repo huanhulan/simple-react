@@ -1,4 +1,5 @@
 import { is, isNil } from 'ramda';
+import { Ref, Fiber } from '../../typings';
 import { mutables, reset } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';

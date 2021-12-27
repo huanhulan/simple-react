@@ -1,5 +1,6 @@
 import { getExampleDOM } from 'test-utils';
 import { requestIdleCallback } from '@shopify/jest-dom-mocks';
+import { Ref, RefObject } from '../typings';
 import {
   createElement,
   render,

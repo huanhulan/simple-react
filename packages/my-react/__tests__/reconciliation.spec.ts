@@ -9,6 +9,7 @@ import {
   useEffect,
   unmountComponentAtNode,
 } from '../index';
+import { FunctionComponent } from '../typings';
 
 describe('reconciliation should works fine', () => {
   let onComponentWillUnmounts: jest.Mock[] = [];

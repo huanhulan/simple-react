@@ -1,3 +1,4 @@
+import { MemoHook } from '../../typings';
 import { mutables } from '../mutables';
 import { getHookState } from './getHookState';
 import { hasDepsChanged } from './hasDepsChanged';

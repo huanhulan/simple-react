@@ -1,4 +1,5 @@
 import { getExampleDOM } from 'test-utils';
+import { FunctionComponent } from '../typings';
 import { render, createElement, unmountComponentAtNode } from '../index';
 
 function XSSTest({ str }: { str: string }) {

@@ -1,3 +1,4 @@
+import { Ref } from '../../typings';
 import { useEffect } from './useEffect';
 
 export function useImperativeHandle<T = Record<string, any>>(

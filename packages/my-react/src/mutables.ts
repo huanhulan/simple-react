@@ -1,5 +1,6 @@
 import mitt from 'mitt';
 import { curry, omit } from 'ramda';
+import { Fiber } from '../typings';
 
 const emitter = mitt();
 export const evt = 'rerender';

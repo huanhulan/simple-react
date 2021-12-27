@@ -2,16 +2,16 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "composite": true, // !important: allow a TypeScript project to be used with project references
-    "outDir": "typings",
+    "outDir": "dist",
     "rootDir": ".",
     "target": "es5",
     "lib": ["dom", "ES2019"],
     "baseUrl": ".",
     "paths": {
-      "test-utils": ["./utils/test-utils.ts"]
+      "test-utils": ["./utils/test-utils.ts"],
     }
   },
-  "files": ["./index.ts", "./index.d.ts"],
+  "files": ["./index.ts"],
   "include": [
     "jest.setup.js",
     "./src/**/*",

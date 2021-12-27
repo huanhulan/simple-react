@@ -1,4 +1,5 @@
 import { isNil } from 'ramda';
+import { FunctionComponent, Ref } from '../typings';
 
 export function forwardRef<P = Record<string, any>>(fn: FunctionComponent<P>) {
   function Forwarded(

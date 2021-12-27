@@ -1,3 +1,4 @@
+import { MyReactElement, ComponentChildren } from '../typings';
 import { createElement } from './createElement';
 
 export function cloneElement<

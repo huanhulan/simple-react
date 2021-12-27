@@ -3,6 +3,7 @@ import { requestIdleCallback } from '@shopify/jest-dom-mocks';
 
 import { getExampleDOM } from 'test-utils';
 import { render, useState, createElement } from '../index';
+import { FunctionComponent } from '../typings';
 
 function Greeting({ newState }: { newState: string }) {
   const [name, setName] = useState('world');

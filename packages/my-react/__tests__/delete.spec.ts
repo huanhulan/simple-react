@@ -2,6 +2,7 @@ import { fireEvent, waitFor } from '@testing-library/dom';
 import { requestIdleCallback } from '@shopify/jest-dom-mocks';
 import { getExampleDOM } from 'test-utils';
 import faker from 'faker';
+import { FunctionComponent } from '../typings';
 import { render, createElement, useState, useCallback } from '../index';
 
 test('Check rendering of a functional component with a prop', async () => {

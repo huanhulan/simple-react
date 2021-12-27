@@ -11,6 +11,12 @@ import MyReact, {
   useContext,
   unmountComponentAtNode,
 } from '../index';
+import {
+  ComponentChildren,
+  FunctionComponent,
+  Ref,
+  ComponentChild,
+} from '../typings';
 
 describe('Portal', () => {
   const container = getExampleDOM();

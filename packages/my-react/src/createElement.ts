@@ -1,4 +1,10 @@
 import { isNil, is } from 'ramda';
+import {
+  TextChild,
+  MyReactElement,
+  ComponentChildren,
+  FunctionComponent,
+} from '../typings';
 import { TEXT_ELEMENT } from './constants';
 
 export function createTextElement(text: TextChild): MyReactElement {

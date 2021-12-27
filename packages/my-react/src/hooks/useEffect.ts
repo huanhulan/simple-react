@@ -1,3 +1,4 @@
+import { Fiber, EffectHook } from '../../typings';
 import { EFFECT_TAG } from '../constants';
 import { mutables } from '../mutables';
 import { HOOK_TAG } from './hookTags';

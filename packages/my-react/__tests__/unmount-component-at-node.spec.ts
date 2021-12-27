@@ -1,5 +1,6 @@
 import { getExampleDOM } from 'test-utils';
 import { render, createElement, unmountComponentAtNode } from '../index';
+import { FunctionComponent } from '../typings';
 
 test('Check rendering of a functional component with a prop', () => {
   const container = getExampleDOM();

@@ -1,3 +1,5 @@
+import { Fiber } from '../../typings';
+
 const isStyle = (key: string) => key === 'style';
 const isEvent = (key: string) => key.startsWith('on');
 const isProperty = (key: string) =>

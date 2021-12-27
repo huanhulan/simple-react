@@ -1,5 +1,10 @@
 import { equals, isNil } from 'ramda';
-
+import {
+  Fiber,
+  ComponentChild,
+  MyReactElement,
+  FunctionComponent,
+} from '../typings';
 import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
 import { isFunctionComponent } from './isFunctionComponent';
@@ -16,7 +21,7 @@ function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   return keysA.reduce((curr, key) => curr && a[key] === b[key], true);
 }
 
-function walkFiberTree(fiber?: Fiber): Fiber | undefined {
+function walkFiberTree(fiber?: Fiber<any>): Fiber<any> | undefined {
   if (!fiber) {
     return fiber;
   }

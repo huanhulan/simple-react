@@ -1,3 +1,4 @@
+import { Fiber } from '../typings';
 import { mutables } from './mutables';
 import { EFFECT_TAG } from './constants';
 

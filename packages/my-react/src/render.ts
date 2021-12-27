@@ -1,4 +1,5 @@
 import { isNil } from 'ramda';
+import { MyReactElement, Fiber } from '../typings';
 import { mutables, reset, pendingFibers } from './mutables';
 import { workLoop } from './concurrency';
 

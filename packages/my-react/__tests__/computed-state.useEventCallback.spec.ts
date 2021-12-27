@@ -1,6 +1,7 @@
 import { fireEvent, waitFor } from '@testing-library/dom';
 import { requestIdleCallback } from '@shopify/jest-dom-mocks';
 import { getExampleDOM } from 'test-utils';
+import { FunctionComponent } from '../typings';
 import {
   render,
   useState,

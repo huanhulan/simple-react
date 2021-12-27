@@ -1,5 +1,5 @@
+import { Fiber, IHook } from '../../typings';
 import { mutables } from '../mutables';
-import { IHook } from '../../typings/types';
 
 export function getHookState(): IHook | undefined {
   const hookIndex = mutables?.wipFiber?.hooks?.length || 0;

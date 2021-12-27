@@ -4,7 +4,7 @@ import { createElement } from './src/MyReact';
 import { createPortal } from './src/portal';
 import { createRef } from './src/createRef';
 
-export * from './typings/types';
+export * from './typings';
 
 const MyReact = {
   cloneElement,
@@ -20,7 +20,7 @@ export * from './src/MyReact';
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      [elemName: string]: MyReactElement;
+      [elemName: string]: any;
     }
   }
 }
