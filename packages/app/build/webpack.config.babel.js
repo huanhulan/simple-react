@@ -17,7 +17,7 @@ export default async function webpackConfig() {
           return;
         }
         rs(stdout);
-      })
+      }),
     );
     const configs = gitConfig
       .split('\n')
@@ -56,7 +56,7 @@ export default async function webpackConfig() {
     output: {
       filename: '[name].[contenthash:8].js',
       path: path.join(__dirname, '../dist'),
-      publicPath: '/',
+      publicPath: '/splitChunks',
       clean: true,
     },
     plugins: [
@@ -92,6 +92,23 @@ export default async function webpackConfig() {
       optimization: {
         minimize: true,
         minimizer: ['...', new CssMinimizerPlugin()],
+        splitChunks: {
+          chunks: 'all',
+          minChunks: 1,
+          minSize: 1,
+          minRemainingSize: 0,
+          cacheGroups: {
+            vendors: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              reuseExistingChunk: true,
+            },
+            myReact: {
+              test: /[\\/]my-react[\\/]dist/,
+              name: 'my-react',
+            },
+          },
+        },
       },
     }),
     mode,
