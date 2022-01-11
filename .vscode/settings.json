@@ -16,5 +16,8 @@
     }
   ],
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "tsImportSorter.configuration.autoFormat": "off"
+  "tsImportSorter.configuration.autoFormat": "off",
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }

@@ -17,7 +17,7 @@ export default async function webpackConfig() {
           return;
         }
         rs(stdout);
-      })
+      }),
     );
     const configs = gitConfig
       .split('\n')

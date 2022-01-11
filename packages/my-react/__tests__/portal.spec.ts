@@ -219,7 +219,7 @@ describe('Portal', () => {
   });
 
   test('Should work with context, and should support native browser event bubbling', async () => {
-    const Context = MyReact.createContext<HTMLElement>();
+    const ModalContext = MyReact.createContext<HTMLElement>();
     const ContainerStyle = {
       position: 'relative',
       'z-index': 0,
@@ -247,18 +247,20 @@ describe('Portal', () => {
     // eslint-disable-next-line @typescript-eslint/ban-types
     const ModalProvider: FunctionComponent<{}> = ({ children }) => {
       const modalRef = useRef<HTMLElement>(null);
-      const [context, setContext] = useState<HTMLElement | null>(null);
+      const [modalRootDom, setModalRootDom] = useState<HTMLElement | null>(
+        null,
+      );
 
       // make sure re-render is triggered after initial
       // render so that modalRef exists
       useEffect(() => {
-        setContext(modalRef.current as HTMLElement);
+        setModalRootDom(modalRef.current as HTMLElement);
       }, []);
 
       return createElement('div', { style: ContainerStyle }, [
         createElement(
-          Context.Provider as any,
-          { value: context },
+          ModalContext.Provider as any,
+          { value: modalRootDom },
           children as ComponentChildren,
         ),
         createElement('div', { ref: modalRef }, []),
@@ -268,7 +270,7 @@ describe('Portal', () => {
     const Modal: FunctionComponent<{
       onClose: () => void;
     }> = ({ onClose, children, ...props }) => {
-      const modalNode = useContext(Context);
+      const modalNode = useContext(ModalContext);
       return modalNode
         ? MyReact.createPortal(
             createElement(
