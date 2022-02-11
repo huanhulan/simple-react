@@ -5,9 +5,10 @@ My simple implementation of **Functional Component Only** `React`.
 ## Supported React API 
 - [x] Functional Component
 - [x] render()
-- [x] createElement()
 - [x] cloneElement()
 - [x] createContext()
+- [x] createElement()
+- [x] createPortal() 
 - [x] createRef()
 - [x] hooks()
 
