@@ -72,6 +72,9 @@ export interface EffectHook extends IHook {
   hasChanged: boolean;
 }
 
+type Depth = number;
+type Breadth = number;
+
 export type Fiber<P = MyReactElement['props']> = {
   key?: Key;
   type?: MyReactElement['type'];
@@ -93,6 +96,7 @@ export type Fiber<P = MyReactElement['props']> = {
   cache?: {
     children: MyReactElement['props']['children'];
   };
+  weight: [Depth, Breadth];
 };
 
 type ContextFiber<T> = Fiber<{ value: T }>;

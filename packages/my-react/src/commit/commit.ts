@@ -3,13 +3,18 @@ import { Ref, Fiber } from '../../typings';
 import { mutables, reset } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
-import { cancelEffects, runEffects } from '../hooks';
+import {
+  cancelEffects,
+  runEffects,
+  cancelLayoutEffects,
+  runLayoutEffects,
+} from '../hooks';
 import {
   getChildFibers,
   enqueueMove,
   downToFindFibersWithDom,
   findParentFiberWithDom,
-} from '../libs';
+} from '../utils';
 
 function applyRef<T>(ref: Ref<T>, value: T) {
   if (!ref) {
@@ -27,7 +32,12 @@ function sortDom([fiber, childrenNodes]: [Fiber, Node[]]) {
   childrenNodes.forEach((node) => parentDom?.appendChild(node as HTMLElement));
 }
 
-function commitDeletion(fiber: Fiber, containerDOM: Node) {
+function commitDeletion(
+  fiber: Fiber,
+  containerDOM: Node,
+  pendingDeletionEffect: Fiber[],
+) {
+  pendingDeletionEffect.push(fiber);
   if (fiber.ref) {
     applyRef(fiber.ref, null);
   }
@@ -39,11 +49,7 @@ function commitDeletion(fiber: Fiber, containerDOM: Node) {
   ) {
     fiber.dom?.parentElement?.removeChild(fiber.dom);
   }
-  cancelEffects(fiber);
-
-  mutables.deletions = mutables.deletions.filter(
-    (fiberToDelete) => fiberToDelete !== fiber,
-  );
+  cancelLayoutEffects(fiber);
 
   if (!fiber.child) {
     return;
@@ -53,6 +59,7 @@ function commitDeletion(fiber: Fiber, containerDOM: Node) {
     commitDeletion(
       fib,
       fiber.isPortal ? (fiber.dom as HTMLElement) : containerDOM,
+      pendingDeletionEffect,
     ),
   );
 }
@@ -78,39 +85,53 @@ export function createDom(fiber: Fiber): Node {
   return dom;
 }
 
-// Fibers that are not dom elements who need to wait for all its children tree to be created to run effects
-let waitForChildrenFibers: Fiber[] = [];
-
-function runPendingEffectsSync(fiber: Fiber) {
-  if (waitForChildrenFibers.includes(fiber)) {
-    if (fiber.effectTag === EFFECT_TAG.UPDATE) {
-      cancelEffects(fiber);
-    }
-    runEffects(fiber);
-    waitForChildrenFibers = waitForChildrenFibers.filter((f) => f !== fiber);
-  }
-}
-
 /**
  * We are also walking the whole tree in the commit phase.
  * React keeps a linked list with just the fibers that have effects and only visit those fibers.
  */
-export function commitWork(fiber?: Fiber) {
-  if (!fiber) {
-    return;
+export function commitWork() {
+  const { wipRoot } = mutables;
+  const { pendingEffectsMax, pendingEffectsMin } = mutables;
+  const effectFibersReversed: Fiber[] = [];
+  const effectFibers: Fiber[] = [];
+  if (!wipRoot?.child) {
+    return {
+      effectFibersReversed,
+      effectFibers,
+    };
   }
-
-  const parentFiberWithDom = findParentFiberWithDom(fiber.parent);
-  const childrenFibersWithDom = downToFindFibersWithDom(parentFiberWithDom);
-  const { dom: domParent } = parentFiberWithDom;
-
-  if (!domParent) {
-    // eslint-disable-next-line
-    throw new Error("Can't find a container element");
+  while (pendingEffectsMax.length) {
+    const fiber = pendingEffectsMax.shift();
+    if (!fiber) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    if (fiber.effectTag === EFFECT_TAG.UPDATE) {
+      cancelLayoutEffects(fiber);
+    }
+    effectFibersReversed.push(fiber);
   }
+  while (pendingEffectsMin.length) {
+    const fiber = pendingEffectsMin.shift();
+    if (!fiber) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    effectFibers.push(fiber);
+    const parentFiberWithDom = findParentFiberWithDom(fiber.parent);
+    const childrenFibersWithDom = downToFindFibersWithDom(parentFiberWithDom);
+    const { dom: domParent } = parentFiberWithDom;
 
-  if (fiber.effectTag === EFFECT_TAG.PLACEMENT) {
-    if (!isNil(fiber.dom) && !fiber.isPortal) {
+    if (!domParent) {
+      // eslint-disable-next-line
+      throw new Error("Can't find a container element");
+    }
+
+    if (
+      fiber.effectTag === EFFECT_TAG.PLACEMENT &&
+      !isNil(fiber.dom) &&
+      !fiber.isPortal
+    ) {
       domParent.appendChild(fiber.dom);
 
       if (
@@ -124,47 +145,66 @@ export function commitWork(fiber?: Fiber) {
           childrenFibersWithDom.map(({ dom }) => dom) as Node[],
         );
       }
-      if (fiber.ref) {
-        applyRef(fiber.ref, fiber.dom);
-      }
-      runEffects(fiber);
-    }
-    if (is(Function, fiber.type)) {
-      waitForChildrenFibers.push(fiber);
-    }
-  } else if (fiber.effectTag === EFFECT_TAG.UPDATE) {
-    if (is(Function, fiber.type)) {
-      waitForChildrenFibers.push(fiber);
-    } else if (!isNil(fiber.dom)) {
-      cancelEffects(fiber);
-      updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
-      if (fiber.ref) {
-        applyRef(fiber.ref, fiber.dom);
-      }
-      runEffects(fiber);
-    }
-  } else if (fiber.effectTag === EFFECT_TAG.DELETION) {
-    if (fiber.ref) {
-      applyRef(fiber.ref, null);
-    }
-    commitDeletion(fiber, domParent);
-    return;
-  }
 
-  // DFS
-  commitWork(fiber.child);
-  runPendingEffectsSync(fiber);
-  commitWork(fiber.sibling);
+      if (fiber.ref) {
+        applyRef(fiber.ref, fiber.dom);
+      }
+    } else if (fiber.effectTag === EFFECT_TAG.UPDATE) {
+      if (!isNil(fiber.dom)) {
+        updateDom(fiber.dom, (fiber.alternate as Fiber).props, fiber.props);
+        if (fiber.ref) {
+          applyRef(fiber.ref, fiber.dom);
+        }
+      }
+    }
+  }
+  effectFibersReversed.forEach((fiber) => {
+    runLayoutEffects(fiber);
+  });
+
+  return {
+    effectFibersReversed,
+    effectFibers,
+  };
+}
+
+function commitDelete() {
+  const { fibersToDelete } = mutables;
+  const pendingDeletionEffect: Fiber[] = [];
+  while (fibersToDelete.array.length) {
+    const fiber = fibersToDelete.remove();
+    // eslint-disable-next-line
+    if (!fiber || (fiber as any).deleted) {
+      // eslint-disable-next-line no-continue
+      continue;
+    }
+    // eslint-disable-next-line
+    (fiber as any).deleted = true;
+    const parentFiberWithDom = findParentFiberWithDom(fiber.parent);
+    const { dom: domParent } = parentFiberWithDom;
+    commitDeletion(fiber, domParent as Node, pendingDeletionEffect);
+  }
+  fibersToDelete.reset();
+  return pendingDeletionEffect;
 }
 
 export function commitRoot() {
-  const { deletions, moves, wipRoot } = mutables;
-  deletions.forEach(commitWork);
-  if (wipRoot?.child) {
-    commitWork(wipRoot.child);
-  }
+  const { moves, wipRoot } = mutables;
+  const pendingDeletionEffect = commitDelete();
+  const { effectFibersReversed } = commitWork();
   moves.forEach(sortDom);
   // cleanup
   mutables.currentRoot = wipRoot;
   reset(['currentRoot', 'nextUnitOfWork']);
+  requestAnimationFrame(() => {
+    pendingDeletionEffect.forEach((fiber) => {
+      cancelEffects(fiber);
+    });
+    effectFibersReversed.forEach((fiber) => {
+      cancelEffects(fiber);
+    });
+    effectFibersReversed.forEach((fiber) => {
+      runEffects(fiber);
+    });
+  });
 }

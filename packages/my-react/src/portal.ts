@@ -1,8 +1,8 @@
 import { MyReactElement, FunctionComponent, Fiber } from '../typings';
 import { createElement } from './createElement';
-import { useEffect, useRef } from './hooks';
+import { useLayoutEffect, useRef } from './hooks';
 import { mutables } from './mutables';
-import { downToFindFibersWithDom } from './libs';
+import { downToFindFibersWithDom } from './utils';
 
 interface PortalProps {
   node: MyReactElement<unknown>;
@@ -17,7 +17,7 @@ export const Portal: FunctionComponent<PortalProps> = ({
   fiber.dom = container;
   fiber.isPortal = true;
   const lastContainer = useRef<Node>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     // the reconciliation will mark children to delete
     if (!children) {
       return;

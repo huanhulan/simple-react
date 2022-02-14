@@ -1,6 +1,5 @@
 import { fireEvent, waitFor } from '@testing-library/dom';
-import { requestIdleCallback } from '@shopify/jest-dom-mocks';
-import { getExampleDOM } from 'test-utils';
+import { getExampleDOM, runNextTick } from 'test-utils';
 import { FunctionComponent } from '../typings';
 import {
   render,
@@ -100,7 +99,7 @@ describe('Check state updates can work for computed values', () => {
         value: '2',
       },
     });
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
 
     await waitFor(() => {
       expect(container.querySelector('#computed-1')).toContainHTML('4');
@@ -114,15 +113,16 @@ describe('Check state updates can work for computed values', () => {
         value: '5',
       },
     });
-    requestIdleCallback.runIdleCallbacks();
-
+    runNextTick();
     await waitFor(() => {
       expect(container.querySelector('#computed-1')).toContainHTML('7');
     });
     await waitFor(() => {
-      expect(onComputedChange).toBeCalledTimes(2);
+      // mount, c1 change, c2 changed
+      expect(onComputedChange).toBeCalledTimes(3);
     });
     await waitFor(() => {
+      // c1 change, c2 changed
       expect(onRelease).toBeCalledTimes(2);
     });
     await waitFor(() => {
@@ -135,7 +135,7 @@ describe('Check state updates can work for computed values', () => {
         value: '4',
       },
     });
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(container.querySelector('#computed-2')).toContainHTML('11');
     });

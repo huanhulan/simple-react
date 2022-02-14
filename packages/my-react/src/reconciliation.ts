@@ -1,4 +1,4 @@
-import { equals, isNil } from 'ramda';
+import { isNil } from 'ramda';
 import {
   Fiber,
   ComponentChild,
@@ -8,18 +8,10 @@ import {
 import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
 import { isFunctionComponent } from './isFunctionComponent';
-import { enqueueDelete, getChildFibers, swap } from './libs';
+import { enqueueDelete, getChildFibers } from './utils';
 import { mutables } from './mutables';
 import { createTextElement } from './createElement';
-
-function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
-  const keysA = Object.keys(a);
-  const keysB = Object.keys(b);
-  if (!equals(keysA, keysB)) {
-    return false;
-  }
-  return keysA.reduce((curr, key) => curr && a[key] === b[key], true);
-}
+import { swap, shallowEqObj } from './libs';
 
 function walkFiberTree(fiber?: Fiber<any>): Fiber<any> | undefined {
   if (!fiber) {
@@ -37,10 +29,15 @@ function walkFiberTree(fiber?: Fiber<any>): Fiber<any> | undefined {
  * @param newFiber
  * @returns `true` for not reusing, `false` for reusing
  */
-function diffFiber(oldFiber: Fiber, newFiber: Fiber): boolean {
+function diffFiber(
+  oldFiber: Fiber,
+  newFiber: Fiber,
+  currentLayerFibers: Fiber[],
+): boolean {
   if (newFiber.type !== oldFiber.type) {
     enqueueDelete(oldFiber);
     newFiber.effectTag = EFFECT_TAG.PLACEMENT;
+    currentLayerFibers.push(newFiber);
     return true;
   }
   const propChanged = !shallowEqObj(newFiber.props, oldFiber.props);
@@ -48,6 +45,7 @@ function diffFiber(oldFiber: Fiber, newFiber: Fiber): boolean {
   newFiber.alternate = oldFiber;
   if (propChanged || oldFiber?.dirty) {
     newFiber.effectTag = EFFECT_TAG.UPDATE;
+    currentLayerFibers.push(newFiber);
     delete oldFiber?.alternate;
     return true;
   }
@@ -61,12 +59,14 @@ function reconcileChildren(
   wipFiber: Fiber,
   elements: Fiber['props']['children'],
 ) {
+  const currentLayerFibers: Fiber[] = [];
+  const depth = wipFiber.weight[0] + 1;
   const os = getChildFibers(wipFiber?.alternate as Fiber);
   const ns: Partial<Fiber>[] = elements
     .flat()
     .filter((fib: ComponentChild) => !!fib)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    .map((element: ComponentChild) => ({
+    .map((element: ComponentChild, index) => ({
       type: (element as MyReactElement).type,
       props: (element as MyReactElement).props,
       parent: wipFiber,
@@ -76,6 +76,7 @@ function reconcileChildren(
       ...((element as MyReactElement).props.key && {
         key: (element as MyReactElement).props.key,
       }),
+      weight: [depth, index],
     }));
 
   // head pointers
@@ -127,6 +128,7 @@ function reconcileChildren(
        * -> [ a b c ] <- new children
        */
       newFirst.effectTag = EFFECT_TAG.PLACEMENT;
+      currentLayerFibers.push(newFirst as Fiber);
       os.splice(newFirstIndex, 0, newFirst as Fiber);
       newFirstIndex += 1;
     } else if (newFirstIndex > newLastIndex) {
@@ -153,7 +155,13 @@ function reconcileChildren(
        * -> newFirstIndex -> [ a b c ] <- newLastIndex
        * check if nFirst and oFirst align, if not, check nLast and oLast
        */
-      if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
+      if (
+        !diffFiber(
+          os[oldFirstIndex],
+          ns[newFirstIndex] as Fiber,
+          currentLayerFibers,
+        )
+      ) {
         /**
          * reuse fiber if no effect should happen,
          * update it's sibling pointer and parent pointer latter
@@ -167,7 +175,13 @@ function reconcileChildren(
       !isNil(newLast.key) &&
       oldLast.key === newLast.key
     ) {
-      if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
+      if (
+        !diffFiber(
+          os[oldLastIndex],
+          ns[newLastIndex] as Fiber,
+          currentLayerFibers,
+        )
+      ) {
         ns[newLastIndex] = os[oldLastIndex];
       }
       oldLastIndex -= 1;
@@ -188,10 +202,22 @@ function reconcileChildren(
        */
       swap(os, oldFirstIndex, oldLastIndex);
 
-      if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
+      if (
+        !diffFiber(
+          os[oldFirstIndex],
+          ns[newFirstIndex] as Fiber,
+          currentLayerFibers,
+        )
+      ) {
         ns[newFirstIndex] = os[oldFirstIndex];
       }
-      if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
+      if (
+        !diffFiber(
+          os[oldLastIndex],
+          ns[newLastIndex] as Fiber,
+          currentLayerFibers,
+        )
+      ) {
         ns[newLastIndex] = os[oldLastIndex];
       }
 
@@ -218,7 +244,13 @@ function reconcileChildren(
        */
       // move the head to the end of the list
       os.splice(oldLastIndex, 0, os.splice(oldFirstIndex, 1)[0]);
-      if (!diffFiber(os[oldLastIndex], ns[newLastIndex] as Fiber)) {
+      if (
+        !diffFiber(
+          os[oldLastIndex],
+          ns[newLastIndex] as Fiber,
+          currentLayerFibers,
+        )
+      ) {
         ns[newLastIndex] = os[oldLastIndex];
       }
       oldLastIndex -= 1;
@@ -240,7 +272,9 @@ function reconcileChildren(
        */
       os.splice(oldFirstIndex, 0, os.splice(oldLastIndex, 1)[0]);
 
-      if (!diffFiber(os[oldFirstIndex], newFirst as Fiber)) {
+      if (
+        !diffFiber(os[oldFirstIndex], newFirst as Fiber, currentLayerFibers)
+      ) {
         ns[newFirstIndex] = os[oldFirstIndex];
       }
 
@@ -298,7 +332,13 @@ function reconcileChildren(
         // Move item to correct position
         os.splice(oldFirstIndex, 0, os.splice(tmp, 1)[0]);
 
-        if (!diffFiber(os[oldFirstIndex], ns[newFirstIndex] as Fiber)) {
+        if (
+          !diffFiber(
+            os[oldFirstIndex],
+            ns[newFirstIndex] as Fiber,
+            currentLayerFibers,
+          )
+        ) {
           ns[newFirstIndex] = os[oldFirstIndex];
         }
 
@@ -317,6 +357,7 @@ function reconcileChildren(
          *      ^
          */
         newFirst.effectTag = EFFECT_TAG.PLACEMENT;
+        currentLayerFibers.push(newFirst as Fiber);
         os.splice(oldFirstIndex, 0, newFirst as Fiber);
         newFirstIndex += 1;
         oldFirstIndex += 1;
@@ -335,6 +376,12 @@ function reconcileChildren(
     }
     el.sibling = ns[idx + 1] as Fiber | undefined;
     el.parent = wipFiber;
+  });
+  currentLayerFibers.forEach((fiber) => {
+    mutables.pendingEffectsMin.push(fiber);
+  });
+  currentLayerFibers.reverse().forEach((fiber) => {
+    mutables.pendingEffectsMax.unshift(fiber);
   });
 }
 
