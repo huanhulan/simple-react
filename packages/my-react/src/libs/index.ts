@@ -1,6 +1,7 @@
 import { equals } from 'ramda';
 
 export { Heap } from './heap';
+
 export function swap<T>(list: Array<T>, l: number, r: number) {
   const k = list[l];
   list[l] = list[r];
@@ -13,5 +14,12 @@ export function shallowEqObj(a: Record<string, any>, b: Record<string, any>) {
   if (!equals(keysA, keysB)) {
     return false;
   }
-  return keysA.reduce((curr, key) => curr && a[key] === b[key], true);
+  // eslint-disable-next-line no-plusplus
+  for (let i = 0; i < keysA.length; i++) {
+    const key = keysA[i];
+    if (a[key] !== b[key]) {
+      return false;
+    }
+  }
+  return true;
 }
