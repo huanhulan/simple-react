@@ -3,7 +3,13 @@ module.exports = function baseBabelConfig(api) {
   return {
     sourceType: 'unambiguous',
     presets: [
-      ['@babel/preset-env'],
+      [
+        '@babel/preset-env',
+        {
+          useBuiltIns: 'entry',
+          corejs: { version: '2.0' },
+        },
+      ],
       [
         '@babel/preset-typescript',
         {

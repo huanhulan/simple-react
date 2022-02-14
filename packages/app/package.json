@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.15.3",
+    "core-js": "2",
     "my-react": "*",
     "ramda": "^0.27.1",
     "requestidlecallback-polyfill": "^1.0.2",
