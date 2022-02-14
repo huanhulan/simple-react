@@ -3,17 +3,25 @@ import { MyReactElement, Fiber } from '../typings';
 import { mutables, reset, pendingFibers } from './mutables';
 import { workLoop } from './concurrency';
 
+function createRootFiber(
+  dom: HTMLElement,
+  children: MyReactElement[] = [],
+): Fiber {
+  return {
+    dom,
+    props: {
+      children,
+    },
+    alternate: mutables.currentRoot,
+    weight: [0, 0],
+  };
+}
+
 function mount(reactElm: MyReactElement, node: HTMLElement) {
   if (isNil(reactElm)) {
     return;
   }
-  mutables.wipRoot = {
-    dom: node,
-    props: {
-      children: [reactElm],
-    },
-    alternate: mutables.currentRoot,
-  };
+  mutables.wipRoot = createRootFiber(node, [reactElm]);
   pendingFibers.enqueue(mutables.wipRoot, true);
 }
 
@@ -48,13 +56,7 @@ export function unmountComponentAtNode(node: HTMLElement) {
   }
 
   // diff to unmount
-  mutables.wipRoot = {
-    dom: node,
-    props: {
-      children: [],
-    },
-    alternate: mutables.currentRoot,
-  };
+  mutables.wipRoot = createRootFiber(node);
   pendingFibers.enqueue(mutables.wipRoot, true);
 
   reset();

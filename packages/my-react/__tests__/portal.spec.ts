@@ -1,10 +1,9 @@
 import { fireEvent, waitFor } from '@testing-library/dom';
-import { getExampleDOM } from 'test-utils';
-import { requestIdleCallback } from '@shopify/jest-dom-mocks';
+import { getExampleDOM, runNextTick } from 'test-utils';
 import MyReact, {
   createElement,
   render,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useEventCallback,
@@ -57,7 +56,7 @@ describe('Portal', () => {
     // eslint-disable-next-line @typescript-eslint/ban-types
     const Modal: FunctionComponent<{}> = ({ children }) => {
       const { current: el } = useRef(document.createElement('div'));
-      useEffect(() => {
+      useLayoutEffect(() => {
         modalRoot.appendChild(el as HTMLDivElement);
         return () => {
           modalRoot.removeChild(el as HTMLDivElement);
@@ -127,7 +126,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('div > button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(
         modalRoot.innerHTML.includes(
@@ -145,7 +144,7 @@ describe('Portal', () => {
       modalRoot.querySelector('.modal > div > button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(modalRoot.innerHTML).toBeFalsy();
     });
@@ -173,7 +172,7 @@ describe('Portal', () => {
       (portalAppRoot.children[1] as HTMLParagraphElement).style.backgroundColor,
     ).toEqual('red');
     set({});
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     expect(
       (portalAppRoot.children[1] as HTMLParagraphElement).style.backgroundColor,
     ).toEqual('');
@@ -210,9 +209,9 @@ describe('Portal', () => {
     expect(portalAppRoot.innerHTML).toBe(
       '<div><p>Hello</p></div><div>foobar</div>',
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     set(() => ref);
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     expect(portalAppRoot.innerHTML).toBe(
       '<div><p>Hello</p><div>foobar</div></div>',
     );
@@ -253,7 +252,7 @@ describe('Portal', () => {
 
       // make sure re-render is triggered after initial
       // render so that modalRef exists
-      useEffect(() => {
+      useLayoutEffect(() => {
         setModalRootDom(modalRef.current as HTMLElement);
       }, []);
 
@@ -405,7 +404,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('#page-modal-button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(portalAppRoot.querySelector('#page-modal')).toBeTruthy();
       expect(portalAppRoot.querySelector('#modal-close-button')).toBeTruthy();
@@ -416,7 +415,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('#modal-close-button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(portalAppRoot.querySelector('#page-modal')).toBeFalsy();
       expect(portalAppRoot.querySelector('#modal-close-button')).toBeFalsy();
@@ -427,7 +426,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('#app-modal-button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(portalAppRoot.querySelector('#submit-button')).toBeTruthy();
       expect(portalAppRoot.querySelector('#modal-close-button')).toBeTruthy();
@@ -440,7 +439,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('#submit-button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     expect(fakeOnSubmitCB).toHaveBeenCalledTimes(1);
     portalAppRoot.removeEventListener('submit', fakeOnSubmitCB);
 
@@ -448,7 +447,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('#modal-close-button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(portalAppRoot.querySelector('#page-modal')).toBeFalsy();
       expect(portalAppRoot.querySelector('#modal-close-button')).toBeFalsy();
@@ -459,7 +458,7 @@ describe('Portal', () => {
       portalAppRoot.querySelector('#page-modal-button') as HTMLButtonElement,
       new MouseEvent('click'),
     );
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
     await waitFor(() => {
       expect(portalAppRoot.querySelector('#page-modal')).toBeTruthy();
       expect(portalAppRoot.querySelector('#modal-close-button')).toBeTruthy();

@@ -1,12 +1,12 @@
 import { Ref } from '../../typings';
-import { useEffect } from './useEffect';
+import { useLayoutEffect } from './useEffect';
 
 export function useImperativeHandle<T = Record<string, any>>(
   ref: Ref<T>,
   createHandle: () => T,
   deps?: any[],
 ) {
-  useEffect(
+  useLayoutEffect(
     () => {
       if (typeof ref === 'function') {
         ref(createHandle());

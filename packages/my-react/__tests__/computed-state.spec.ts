@@ -1,6 +1,5 @@
 import { fireEvent, waitFor } from '@testing-library/dom';
-import { requestIdleCallback } from '@shopify/jest-dom-mocks';
-import { getExampleDOM } from 'test-utils';
+import { getExampleDOM, runNextTick } from 'test-utils';
 import { FunctionComponent } from '../typings';
 import {
   render,
@@ -36,7 +35,7 @@ function Excel({
     return () => {
       onRelease();
     };
-  }, [onComputedChange, c1, c2]);
+  }, [onRelease, onComputedChange, c1, c2]);
   return createElement(
     'div',
     {},
@@ -86,7 +85,7 @@ describe('Check state updates can work for computed values', () => {
         value: '2',
       },
     });
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
 
     await waitFor(() => {
       expect(container.querySelector('p')).toContainHTML('4');
@@ -100,18 +99,21 @@ describe('Check state updates can work for computed values', () => {
         value: '5',
       },
     });
-    requestIdleCallback.runIdleCallbacks();
+    runNextTick();
 
     await waitFor(() => {
       expect(container.querySelector('p')).toContainHTML('7');
     });
     await waitFor(() => {
-      expect(onComputedChange).toBeCalledTimes(2);
+      // mount, c1 change, c2 changed
+      expect(onComputedChange).toBeCalledTimes(3);
     });
     await waitFor(() => {
+      // c1 change, c2 changed
       expect(onRelease).toBeCalledTimes(2);
     });
     await waitFor(() => {
+      // should render 7
       expect(onComputedChange).toHaveBeenCalledWith(7);
     });
   });
