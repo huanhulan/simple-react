@@ -1,7 +1,7 @@
 /** @jsx createElement */
-import { createElement, useRef, useEffect } from 'my-react';
+import { createElement, useRef, useEffect, memo } from 'my-react';
 
-export function Input<T extends string = 'input'>({
+export const Input = memo(function Input<T extends string = 'input'>({
   autoFocus,
   ...props
 }: {
@@ -18,4 +18,4 @@ export function Input<T extends string = 'input'>({
     }
   }, []);
   return <input ref={inputRef} {...props} />;
-}
+});
