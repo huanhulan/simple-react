@@ -1,3 +1,5 @@
+import { swap } from './swap';
+
 export class Heap<T> {
   array: T[] = [];
 
@@ -70,7 +72,7 @@ export class Heap<T> {
     if (!this.size) {
       return null;
     }
-    this.swap(index, this.size - 1); // swap with last
+    swap(this.array, index, this.size - 1); // swap with last
     const value = this.array.pop(); // remove element
     this.bubbleDown(index);
     this.set.delete(value as T);
@@ -88,7 +90,7 @@ export class Heap<T> {
       this.compare(Heap.parent(index), index) > 0
     ) {
       const parentIndex = Heap.parent(index);
-      this.swap(parentIndex, index);
+      swap(this.array, parentIndex, index);
       index = parentIndex;
     }
   }
@@ -104,7 +106,7 @@ export class Heap<T> {
       this.compare(curr, this.getTopChild(curr)) > 0
     ) {
       const next = this.getTopChild(curr);
-      this.swap(curr, next);
+      swap(this.array, curr, next);
       curr = next;
     }
   }
@@ -134,9 +136,5 @@ export class Heap<T> {
 
   private static right(i: number) {
     return 2 * i + 2;
-  }
-
-  private swap(i1: number, i2: number) {
-    [this.array[i1], this.array[i2]] = [this.array[i2], this.array[i1]];
   }
 }
