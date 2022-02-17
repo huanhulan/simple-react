@@ -61,5 +61,5 @@ export function memo<T extends RenderableProps<Record<string, unknown>>>(
   MemoedComponent.displayName = `Memo${
     Component.displayName || Component.name
   }`;
-  return MemoedComponent;
+  return MemoedComponent as FunctionComponent<T>;
 }

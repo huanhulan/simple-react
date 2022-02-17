@@ -1,5 +1,6 @@
+import { fireEvent } from '@testing-library/dom';
 import { getExampleDOM, runNextTick } from 'test-utils';
-import MyReact, { createElement, render, useState } from '../index';
+import MyReact, { createElement, render, useState, forwardRef } from '../index';
 
 describe('memo()', () => {
   test('should work with function components', () => {
@@ -137,9 +138,77 @@ describe('memo()', () => {
     function Foo() {
       return createElement('div', {}, 'Hello Word');
     }
-    const App = MyReact.memo(MyReact.memo(Foo) as any);
+    const App = MyReact.memo(MyReact.memo(Foo));
     render(createElement(App as any, {}, []), container);
     runNextTick();
     expect(container.querySelector('div')?.innerHTML).toEqual('Hello Word');
+  });
+
+  test('should pass ref through nested memos', () => {
+    const container = getExampleDOM();
+    const Foo = forwardRef((_, ref) => {
+      return createElement('div', { ref }, 'Hello Word');
+    });
+    const ref: Record<string, any> = {};
+    const App = MyReact.memo(MyReact.memo(Foo));
+    render(createElement(App, { ref }), container);
+    expect(ref.current).not.toBeUndefined();
+  });
+
+  test('should not reorder children', () => {
+    const container = getExampleDOM();
+
+    const array = [{ name: 'A' }, { name: 'B' }, { name: 'C' }, { name: 'D' }];
+    const ListItem = MyReact.memo(
+      ({
+        name,
+        isSelected,
+        setSelected,
+      }: {
+        name: string;
+        isSelected: boolean;
+        setSelected: (name: string) => void;
+      }) => {
+        const handleClick = () => setSelected(name);
+
+        return createElement(
+          'li',
+          {
+            onClick: handleClick,
+            ...(isSelected && {
+              className: 'selected',
+            }),
+          },
+          name,
+        );
+      },
+    );
+    const List = () => {
+      const [selected, setSelected] = useState('');
+      return createElement(
+        'ol',
+        {},
+        array.map((item) =>
+          createElement(ListItem as any, {
+            isSelected: item.name === selected,
+            setSelected,
+            ...item,
+            key: item.name,
+          }),
+        ),
+      );
+    };
+
+    render(createElement(List, {}), container);
+    expect(container.innerHTML).toBe(
+      '<ol><li>A</li><li>B</li><li>C</li><li>D</li></ol>',
+    );
+    fireEvent.click(
+      container.querySelector('li:nth-child(3)') as HTMLLIElement,
+    );
+    runNextTick();
+    expect(container.innerHTML).toBe(
+      '<ol><li>A</li><li>B</li><li class="selected">C</li><li>D</li></ol>',
+    );
   });
 });
