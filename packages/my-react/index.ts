@@ -3,6 +3,7 @@ import { createContext } from './src/createContext';
 import { createElement } from './src/MyReact';
 import { createPortal } from './src/portal';
 import { createRef } from './src/createRef';
+import { memo } from './src/memo';
 
 export * from './typings';
 
@@ -12,6 +13,7 @@ const MyReact = {
   createElement,
   createPortal,
   createRef,
+  memo,
 };
 
 export default MyReact;
