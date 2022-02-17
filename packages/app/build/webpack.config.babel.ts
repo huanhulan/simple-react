@@ -4,13 +4,14 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import path from 'path';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
 import { env, argv } from 'process';
+import { Configuration } from 'webpack';
 
 export default async function webpackConfig() {
-  let author;
-  let link;
+  let author: string;
+  let link: string;
 
   try {
-    const gitConfig = await new Promise((rs, rj) =>
+    const gitConfig: string = await new Promise((rs, rj) =>
       exec('git config -l', (err, stdout) => {
         if (err) {
           rj(err);
@@ -95,5 +96,5 @@ export default async function webpackConfig() {
       },
     }),
     mode,
-  };
+  } as Configuration;
 }
