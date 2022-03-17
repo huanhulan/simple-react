@@ -32,42 +32,55 @@ export function TodoMVC({ model }: { model: TodoModel }) {
   const [editing, setEditing] = useState<string>('');
   const toggleAllId = 'toggle-all';
 
-  const handleNewTodoKeyDown = useEventCallback((e: any) => {
-    if (e.keyCode !== ENTER_KEY) return;
+  const handleNewTodoKeyDown = useEventCallback((e: KeyboardEvent) => {
+    if (e.keyCode !== ENTER_KEY) {
+      return;
+    }
     e.preventDefault();
 
-    const val = newTodo.trim();
+    const val = (e.target as HTMLInputElement).value.trim();
     if (val) {
       model.addTodo(val);
       setNewTodo('');
     }
   });
+
   const updateNewTodo = useEventCallback((e: any) => {
     setNewTodo(e.target.value);
   });
+
   const toggle = useEventCallback((todo: Todo) => {
     model.toggle(todo);
   });
+
   const destroy = useEventCallback((todo: Todo) => {
     model.destroy(todo);
   });
+
   const edit = useEventCallback((todo: Todo) => {
     setEditing(todo.id);
   });
+
   const save = useEventCallback((todoToSave: Todo, text: string) => {
     model.save(todoToSave, text);
     setEditing('');
   });
-  const toggleAll = useEventCallback((e: any) => {
-    const { checked } = e.target;
+
+  const toggleAll = useEventCallback((e: MouseEvent) => {
+    const { checked } = e.target as HTMLInputElement;
     model.toggleAll(checked);
+    // Because we don't have controlled-component feature
+    e.preventDefault();
   });
+
   const cancel = useEventCallback(() => {
     setEditing('');
   });
+
   const clearCompleted = useEventCallback(() => {
     model.clearCompleted();
   });
+
   useEffect(() => {
     const handler = () => setNowShowing(getRoute());
     window.addEventListener('hashchange', handler);
@@ -75,6 +88,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
       window.removeEventListener('hashchange', handler);
     };
   }, [setNowShowing]);
+
   useEffect(() => {
     model.registerCallback(setTodo);
     return () => {
@@ -88,6 +102,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
     0,
   );
   const completedCount = todos.length - activeTodoCount;
+
   return (
     <div>
       <TodoHeader

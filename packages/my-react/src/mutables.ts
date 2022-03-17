@@ -11,6 +11,13 @@ export const onRerender: (cb: () => void) => void = curry(emitter.on)(
 );
 export const rerender = (sync?: boolean) => emitter.emit(evt, sync);
 
+const compareFiberAscend = (l: Fiber, r: Fiber) => {
+  if (l.weight[0] === r.weight[0]) {
+    return l.weight[1] - r.weight[1];
+  }
+  return l.weight[0] - r.weight[0];
+};
+
 export const getInitialValue = () =>
   ({
     nextUnitOfWork: undefined,
@@ -20,12 +27,7 @@ export const getInitialValue = () =>
     // save a reference to that "last fiber tree we committed to the DOM" after we finish a commit.
     currentRoot: undefined,
     // keep track of the nodes we want to remove
-    fibersToDelete: new Heap((l: Fiber, r: Fiber) => {
-      if (l.weight[0] === r.weight[0]) {
-        return l.weight[1] - r.weight[1];
-      }
-      return l.weight[0] - r.weight[0];
-    }),
+    fibersToDelete: new Heap(compareFiberAscend),
     pendingEffectsMin: [],
     pendingEffectsMax: [],
     moves: [],
@@ -43,26 +45,24 @@ export const getInitialValue = () =>
 export const mutables = getInitialValue();
 
 class PendingFibers {
-  private queue: Fiber[] = [];
+  private queue = new Heap(compareFiberAscend);
 
   enqueue(fiber: Fiber, shouldRenderImmediately = false) {
-    if (!this.queue.includes(fiber)) {
-      this.queue.push(fiber);
-    }
+    this.queue.add(fiber);
     rerender(shouldRenderImmediately);
   }
 
   hasPendingFibers() {
-    return !!this.queue.length;
+    return !!this.queue.size;
   }
 
   get head(): Fiber<any> {
-    return this.queue[0];
+    return this.queue.peek;
   }
 
   consume() {
     const res = this.head;
-    this.queue.shift();
+    this.queue.remove();
     return res;
   }
 }
