@@ -26,8 +26,9 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
   const className = [completed ? 'completed' : '', editing ? ' editing' : '']
     .filter((s) => !!s)
     .join(' ');
-  const toggle = useEventCallback(() => {
+  const toggle = useEventCallback((e: MouseEvent) => {
     onToggle(todo);
+    e.preventDefault();
   });
 
   /**
@@ -85,7 +86,7 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
           className="toggle"
           type="checkbox"
           checked={completed}
-          onChange={toggle}
+          onClick={toggle}
           id={id}
         />
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}

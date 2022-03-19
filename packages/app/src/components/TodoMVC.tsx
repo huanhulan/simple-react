@@ -47,6 +47,7 @@ export function TodoMVC({ model }: { model: TodoModel }) {
 
   const updateNewTodo = useEventCallback((e: any) => {
     setNewTodo(e.target.value);
+    e.preventDefault();
   });
 
   const toggle = useEventCallback((todo: Todo) => {

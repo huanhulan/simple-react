@@ -17,7 +17,7 @@ export function TodoHeader({
         placeholder="What needs to be done?"
         value={newTodo}
         onKeyDown={handleNewTodoKeyDown}
-        onInput={updateNewTodo}
+        onKeyUp={updateNewTodo}
         autoFocus // eslint-disable-line
       />
     </header>
