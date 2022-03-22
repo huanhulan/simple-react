@@ -5,3 +5,4 @@ export const enum EFFECT_TAG {
 }
 export const TEXT_ELEMENT = 'TEXT_ELEMENT';
 export const ROOT_KEY = 'root';
+export const CONTEXT_TYPE = '$$my_react-context';

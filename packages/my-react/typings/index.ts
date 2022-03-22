@@ -97,6 +97,8 @@ export type Fiber<P = MyReactElement['props']> = {
     children: MyReactElement['props']['children'];
   };
   weight: [Depth, Breadth];
+  // whether an old fiber is reconciled
+  reconciledAt?: number;
 };
 
 type ContextFiber<T> = Fiber<{ value: T }>;

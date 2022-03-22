@@ -1,15 +1,13 @@
 import { commitRoot } from './commit';
-import { mutables, onRerender, pendingFibers } from './mutables';
+import { mutables, onRerender, pendingFibers, transaction } from './mutables';
 import { performUnitOfWork } from './reconciliation';
-
-let scheduled: number | undefined;
 
 function performWorkSync(deadline?: IdleDeadline) {
   if (!mutables.nextUnitOfWork) {
     if (mutables.wipRoot) {
       commitRoot();
     }
-    scheduled = undefined;
+    transaction.id = undefined;
 
     if (pendingFibers.hasPendingFibers()) {
       // eslint-disable-next-line no-use-before-define
@@ -26,7 +24,7 @@ function performWorkSync(deadline?: IdleDeadline) {
 }
 
 export function workLoop(sync?: boolean) {
-  if (scheduled) {
+  if (transaction.id) {
     return;
   }
 
@@ -40,7 +38,7 @@ export function workLoop(sync?: boolean) {
     performWorkSync();
     return;
   }
-  scheduled = requestIdleCallback(performWorkSync as () => void);
+  transaction.id = requestIdleCallback(performWorkSync as () => void);
 }
 
 onRerender(workLoop);

@@ -9,7 +9,7 @@ import { createDom } from './commit';
 import { EFFECT_TAG } from './constants';
 import { isFunctionComponent } from './isFunctionComponent';
 import { enqueueDelete, getChildFibers } from './utils';
-import { mutables } from './mutables';
+import { mutables, transaction } from './mutables';
 import { createTextElement } from './createElement';
 import { swap, shallowEqObj } from './libs';
 
@@ -43,6 +43,7 @@ function diffFiber(
   const propChanged = !shallowEqObj(newFiber.props, oldFiber.props);
   newFiber.dom = oldFiber?.dom;
   newFiber.alternate = oldFiber;
+
   if (propChanged || oldFiber?.dirty) {
     newFiber.effectTag = EFFECT_TAG.UPDATE;
     currentLayerFibers.push(newFiber);
@@ -54,7 +55,6 @@ function diffFiber(
   return false;
 }
 
-// BFS children diff
 function reconcileChildren(
   wipFiber: Fiber,
   elements: Fiber['props']['children'],
@@ -62,6 +62,9 @@ function reconcileChildren(
   const currentLayerFibers: Fiber[] = [];
   const depth = wipFiber.weight[0] + 1;
   const os = getChildFibers(wipFiber?.alternate as Fiber);
+  if (wipFiber.alternate) {
+    wipFiber.alternate.reconciledAt = transaction.id;
+  }
   const ns: Partial<Fiber>[] = elements
     .flat()
     .filter((fib: ComponentChild) => !!fib)

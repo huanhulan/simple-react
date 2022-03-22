@@ -1,8 +1,7 @@
 import { Context, FunctionComponent, Fiber } from '../typings';
 import { useState } from './hooks';
 import { mutables } from './mutables';
-
-export const contextType = '$$my_react-context';
+import { CONTEXT_TYPE } from './constants';
 
 let i = 0;
 
@@ -49,7 +48,7 @@ export function createContext<T>(defaultValue?: T): Context<T> {
   Provider.defaultProps = {
     value: defaultValue,
   };
-  Provider.type = contextType;
+  Provider.type = CONTEXT_TYPE;
 
   context.Provider = Provider;
 

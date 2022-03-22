@@ -39,13 +39,14 @@ export function useState<P>(
       hookOwner.dirty = true;
     }
     if (mutables.currentRoot) {
-      // restart diff from top of the tree
       mutables.wipRoot = mutables.currentRoot;
-      mutables.currentRoot.alternate = mutables.currentRoot;
+      ((hookOwner as Fiber).parent as Fiber).alternate = (hookOwner as Fiber)
+        .parent as Fiber;
+      pendingFibers.enqueue((hookOwner as Fiber).parent as Fiber);
     } else {
       (mutables.wipRoot as Fiber).alternate = mutables.wipRoot;
+      pendingFibers.enqueue(mutables.wipRoot as Fiber);
     }
-    pendingFibers.enqueue(mutables.wipRoot as Fiber);
   };
   mutables.wipFiber?.hooks?.push(hook);
 

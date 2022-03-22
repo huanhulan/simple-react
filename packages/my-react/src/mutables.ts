@@ -43,7 +43,11 @@ export const getInitialValue = () =>
   });
 
 export const mutables = getInitialValue();
-
+export const transaction: {
+  id: undefined | number;
+} = {
+  id: undefined,
+};
 class PendingFibers {
   private queue = new Heap(compareFiberAscend);
 
@@ -53,7 +57,18 @@ class PendingFibers {
   }
 
   hasPendingFibers() {
+    this.removeReconciled();
     return !!this.queue.size;
+  }
+
+  removeReconciled() {
+    while (
+      this.queue.size &&
+      transaction.id !== undefined &&
+      this.queue.peek.reconciledAt === transaction.id
+    ) {
+      this.queue.remove();
+    }
   }
 
   get head(): Fiber<any> {
@@ -61,6 +76,7 @@ class PendingFibers {
   }
 
   consume() {
+    this.removeReconciled();
     const res = this.head;
     this.queue.remove();
     return res;
@@ -75,4 +91,5 @@ export function reset(omitKeys: string[] = []) {
 
 if (process.env.NODE_ENV !== 'production') {
   window['$$my_react-mutables'] = mutables;
+  window['$$my_pending-fibers'] = pendingFibers;
 }
