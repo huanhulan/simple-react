@@ -1,6 +1,6 @@
 import { is, isNil } from 'ramda';
 import { Ref, Fiber } from '../../typings';
-import { mutables, reset } from '../mutables';
+import { mutables, reset, transaction } from '../mutables';
 import { TEXT_ELEMENT, EFFECT_TAG } from '../constants';
 import { updateDom } from './updateDom';
 import {
@@ -100,9 +100,11 @@ export function commitWork() {
       effectFibers,
     };
   }
+
+  pendingEffectsMax.reverse();
   while (pendingEffectsMax.length) {
-    const fiber = pendingEffectsMax.shift();
-    if (!fiber) {
+    const fiber = pendingEffectsMax.pop();
+    if (!fiber || fiber.version !== transaction.id) {
       // eslint-disable-next-line no-continue
       continue;
     }
@@ -111,9 +113,11 @@ export function commitWork() {
     }
     effectFibersReversed.push(fiber);
   }
+
+  pendingEffectsMin.reverse();
   while (pendingEffectsMin.length) {
-    const fiber = pendingEffectsMin.shift();
-    if (!fiber) {
+    const fiber = pendingEffectsMin.pop();
+    if (!fiber || fiber.version !== transaction.id) {
       // eslint-disable-next-line no-continue
       continue;
     }

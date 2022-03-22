@@ -99,6 +99,7 @@ export type Fiber<P = MyReactElement['props']> = {
   weight: [Depth, Breadth];
   // whether an old fiber is reconciled
   reconciledAt?: number;
+  version?: number;
 };
 
 type ContextFiber<T> = Fiber<{ value: T }>;

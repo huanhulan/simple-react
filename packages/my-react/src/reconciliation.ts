@@ -379,6 +379,7 @@ function reconcileChildren(
     }
     el.sibling = ns[idx + 1] as Fiber | undefined;
     el.parent = wipFiber;
+    el.version = transaction.id;
   });
   currentLayerFibers.forEach((fiber) => {
     mutables.pendingEffectsMin.push(fiber);
