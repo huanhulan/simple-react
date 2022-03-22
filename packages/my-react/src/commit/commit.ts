@@ -100,8 +100,10 @@ export function commitWork() {
       effectFibers,
     };
   }
+
+  pendingEffectsMax.reverse();
   while (pendingEffectsMax.length) {
-    const fiber = pendingEffectsMax.shift();
+    const fiber = pendingEffectsMax.pop();
     if (!fiber) {
       // eslint-disable-next-line no-continue
       continue;
@@ -111,8 +113,10 @@ export function commitWork() {
     }
     effectFibersReversed.push(fiber);
   }
+
+  pendingEffectsMin.reverse();
   while (pendingEffectsMin.length) {
-    const fiber = pendingEffectsMin.shift();
+    const fiber = pendingEffectsMin.pop();
     if (!fiber) {
       // eslint-disable-next-line no-continue
       continue;
